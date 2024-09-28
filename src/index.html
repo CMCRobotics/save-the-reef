@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Save the reef</title>
+  </head>
+  <body>
+    <a-scene scene-controller>
+      <a-entity id="rig" position="0 1.6 0">
+        <a-camera></a-camera>
+      </a-entity>
+      <a-sky color="#87CEEB"></a-sky>
+      <a-entity reef-scene-controller=""></a-entity>
+      <a-ocean color="#1e90ff" depth="100" width="100"></a-ocean>
+      <a-cylinder color="red" opacity="0.4" radius="2.5" height="2" position="0 0.04 -10"></a-cylinder>
+      <a-cylinder color="yellow" opacity="0.8" radius="3.5" height="3" position="-8 0.04 -12"></a-cylinder>
+    </a-scene>
+  </body>
+</html>

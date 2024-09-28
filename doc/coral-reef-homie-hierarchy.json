@@ -1,0 +1,492 @@
+{
+  "devices": {
+    "reef-X": {
+      "name": "Coral Reef Ecosystem X",
+      "state": "ready",
+      "nodes": {
+        "coral": {
+          "name": "Coral Health Metrics",
+          "type": "sensor",
+          "properties": {
+            "health": {
+              "name": "Overall Health",
+              "datatype": "float",
+              "unit": "%"
+            },
+            "growth-index": {
+              "name": "Growth Index",
+              "datatype": "float"
+            },
+            "growth-rate": {
+              "name": "Growth Rate",
+              "datatype": "float",
+              "unit": "mm/year"
+            },
+            "bleaching": {
+              "name": "Bleaching Percentage",
+              "datatype": "float",
+              "unit": "%"
+            },
+            "species-diversity": {
+              "name": "Species Diversity",
+              "datatype": "integer",
+              "unit": "%"
+            }
+          }
+        },
+        "ecosystem": {
+          "name": "Ecosystem Indicators",
+          "type": "sensor",
+          "properties": {
+            "fish-population": {
+              "name": "Fish Population",
+              "datatype": "integer"
+            },
+            "algae-cover": {
+              "name": "Algae Cover",
+              "datatype": "float",
+              "unit": "%"
+            },
+            "predator-presence": {
+              "name": "Predator Presence",
+              "datatype": "boolean"
+            }
+          }
+        },
+        "environment": {
+          "name": "Environmental Conditions",
+          "type": "sensor",
+          "properties": {
+            "water-temperature": {
+              "name": "Water Temperature",
+              "datatype": "float",
+              "unit": "°C"
+            },
+            "water-acidity": {
+              "name": "Water Acidity",
+              "datatype": "float",
+              "unit": "pH"
+            },
+            "light-intensity": {
+              "name": "Light Intensity",
+              "datatype": "float",
+              "unit": "%"
+            },
+            "nutrient-levels": {
+              "name": "Nutrient Levels",
+              "datatype": "float",
+              "unit": "mg/L"
+            }
+          }
+        },
+        "asset-lifeform-X": {
+          "name": "Marine Life Form X",
+          "type": "asset",
+          "properties": {
+            "visible": {
+              "name": "Visibility",
+              "datatype": "boolean"
+            },
+            "position": {
+              "name": "Position",
+              "datatype": "json"
+            },
+            "species": {
+              "name": "Species",
+              "datatype": "enum",
+              "format": "turtle,shark,fish-school,eel"
+            },
+            "last-update": {
+              "name": "Last Updated",
+              "datatype": "datetime"
+            }
+          }
+        },
+        "asset-cluster-X": {
+          "name": "Asset Cluster X",
+          "type": "asset",
+          "properties": {
+            "visible": {
+              "name": "Visibility",
+              "datatype": "boolean"
+            },
+            "position": {
+              "name": "Position",
+              "datatype": "json"
+            },
+            "type": {
+              "name": "Cluster Type",
+              "datatype": "enum",
+              "format": "algae,coral"
+            },
+            "size": {
+              "name": "Cluster Size",
+              "datatype": "float"
+            }
+          }
+        },
+        "human-impact": {
+          "name": "Human Impact Factors",
+          "type": "sensor",
+          "properties": {
+            "pollution-level": {
+              "name": "Pollution Level",
+              "datatype": "float",
+              "unit": "%"
+            },
+            "fishing-pressure": {
+              "name": "Fishing Pressure",
+              "datatype": "float",
+              "unit": "%"
+            },
+            "tourism-activity": {
+              "name": "Tourism Activity",
+              "datatype": "float",
+              "unit": "%"
+            }
+          }
+        }
+      }
+    },
+    "scene-X": {
+      "name": "Game Scene X",
+      "state": "ready",
+      "nodes": {
+        "camera": {
+          "name": "Main Camera",
+          "type": "controller",
+          "properties": {
+            "position": {
+              "name": "Camera Position",
+              "datatype": "json"
+            },
+            "orientation": {
+              "name": "Camera Orientation",
+              "datatype": "json"
+            },
+            "fov": {
+              "name": "Field of View",
+              "datatype": "float",
+              "unit": "degrees"
+            }
+          }
+        },
+        "ambient-light": {
+          "name": "Ambient Lighting",
+          "type": "controller",
+          "properties": {
+            "color": {
+              "name": "Light Color",
+              "datatype": "color"
+            },
+            "intensity": {
+              "name": "Light Intensity",
+              "datatype": "float",
+              "unit": "%"
+            }
+          }
+        },
+        "spot-light-X": {
+          "name": "Spotlight X",
+          "type": "controller",
+          "properties": {
+            "position": {
+              "name": "Light Position",
+              "datatype": "json"
+            },
+            "orientation": {
+              "name": "Light Orientation",
+              "datatype": "json"
+            },
+            "color": {
+              "name": "Light Color",
+              "datatype": "color"
+            },
+            "intensity": {
+              "name": "Light Intensity",
+              "datatype": "float",
+              "unit": "%"
+            },
+            "cast-shadow": {
+              "name": "Cast Shadow",
+              "datatype": "boolean"
+            }
+          }
+        },
+        "background": {
+          "name": "Scene Background",
+          "type": "asset",
+          "properties": {
+            "image-url": {
+              "name": "Background Image URL",
+              "datatype": "string"
+            }
+          }
+        },
+        "fog": {
+          "name": "Scene Fog",
+          "type": "controller",
+          "properties": {
+            "type": {
+              "name": "Fog Type",
+              "datatype": "enum",
+              "format": "linear,exponential"
+            },
+            "distance": {
+              "name": "Fog Distance",
+              "datatype": "float",
+              "unit": "m"
+            }
+          }
+        }
+      }
+    },
+    "gateway": {
+      "name": "Game Gateway",
+      "state": "ready",
+      "nodes": {
+        "player-X": {
+          "name": "Player X",
+          "type": "controller",
+          "properties": {
+            "nickname": {
+              "name": "Player Nickname",
+              "datatype": "string"
+            },
+            "position": {
+              "name": "Player Position",
+              "datatype": "json"
+            },
+            "rotation": {
+              "name": "Player Rotation",
+              "datatype": "json"
+            },
+            "scale": {
+              "name": "Player Scale",
+              "datatype": "float"
+            },
+            "last-action": {
+              "name": "Last Action Timestamp",
+              "datatype": "datetime"
+            },
+            "action-duration": {
+              "name": "Action Duration",
+              "datatype": "duration"
+            }
+          }
+        },
+        "player-manager": {
+          "name": "Player Management",
+          "type": "controller",
+          "properties": {
+            "player-count": {
+              "name": "Number of Players",
+              "datatype": "integer"
+            },
+            "last-join": {
+              "name": "Last Join Timestamp",
+              "datatype": "datetime"
+            }
+          }
+        },
+        "team": {
+          "name": "Team Information",
+          "type": "controller",
+          "properties": {
+            "score": {
+              "name": "Team Score",
+              "datatype": "integer"
+            },
+            "credit": {
+              "name": "Team Credit",
+              "datatype": "float",
+              "unit": "credits"
+            }
+          }
+        }
+      }
+    },
+    "terminal-X": {
+      "name": "Game Terminal X",
+      "state": "ready",
+      "nodes": {
+        "vote": {
+          "name": "Voting System",
+          "type": "controller",
+          "properties": {
+            "value": {
+              "name": "Vote Value",
+              "datatype": "integer"
+            },
+            "index": {
+              "name": "Vote Index",
+              "datatype": "integer"
+            },
+            "last": {
+              "name": "Last Vote",
+              "datatype": "integer"
+            }
+          }
+        },
+        "environment": {
+          "name": "Environmental Sensors",
+          "type": "sensor",
+          "properties": {
+            "temperature": {
+              "name": "Temperature",
+              "datatype": "float",
+              "unit": "°C"
+            },
+            "luminosity": {
+              "name": "Luminosity",
+              "datatype": "float",
+              "unit": "lx"
+            }
+          }
+        },
+        "info": {
+          "name": "Terminal Information",
+          "type": "sensor",
+          "properties": {
+            "terminal-id": {
+              "name": "Terminal ID",
+              "datatype": "string"
+            },
+            "serial-number": {
+              "name": "Serial Number",
+              "datatype": "string"
+            },
+            "heartbeat": {
+              "name": "Heartbeat",
+              "datatype": "integer"
+            },
+            "command": {
+              "name": "Command",
+              "datatype": "string"
+            }
+          }
+        },
+        "button-a": {
+          "name": "Button A",
+          "type": "sensor",
+          "properties": {
+            "pressed": {
+              "name": "Is Pressed",
+              "datatype": "boolean"
+            },
+            "count": {
+              "name": "Press Count",
+              "datatype": "integer"
+            },
+            "last": {
+              "name": "Last Press",
+              "datatype": "datetime"
+            }
+          }
+        },
+        "button-b": {
+          "name": "Button B",
+          "type": "sensor",
+          "properties": {
+            "pressed": {
+              "name": "Is Pressed",
+              "datatype": "boolean"
+            },
+            "count": {
+              "name": "Press Count",
+              "datatype": "integer"
+            },
+            "last": {
+              "name": "Last Press",
+              "datatype": "datetime"
+            }
+          }
+        },
+        "button-a-b": {
+          "name": "Button A+B",
+          "type": "sensor",
+          "properties": {
+            "pressed": {
+              "name": "Is Pressed",
+              "datatype": "boolean"
+            },
+            "count": {
+              "name": "Press Count",
+              "datatype": "integer"
+            },
+            "last": {
+              "name": "Last Press",
+              "datatype": "datetime"
+            }
+          }
+        },
+        "shake": {
+          "name": "Shake Sensor",
+          "type": "sensor",
+          "properties": {
+            "activated": {
+              "name": "Is Activated",
+              "datatype": "boolean"
+            },
+            "count": {
+              "name": "Shake Count",
+              "datatype": "integer"
+            },
+            "last": {
+              "name": "Last Shake",
+              "datatype": "datetime"
+            }
+          }
+        },
+        "display": {
+          "name": "Terminal Display",
+          "type": "controller",
+          "properties": {
+            "contents": {
+              "name": "Display Contents",
+              "datatype": "string"
+            },
+            "luminosity": {
+              "name": "Display Luminosity",
+              "datatype": "integer",
+              "unit": "%"
+            }
+          }
+        },
+        "accelerometer": {
+          "name": "Accelerometer",
+          "type": "sensor",
+          "properties": {
+            "x": {
+              "name": "X Axis",
+              "datatype": "integer"
+            },
+            "y": {
+              "name": "Y Axis",
+              "datatype": "integer"
+            },
+            "z": {
+              "name": "Z Axis",
+              "datatype": "integer"
+            },
+            "value": {
+              "name": "Accelerometer Data",
+              "datatype": "json"
+            }
+          }
+        },
+        "compass": {
+          "name": "Digital Compass",
+          "type": "sensor",
+          "properties": {
+            "direction": {
+              "name": "Compass Direction",
+              "datatype": "float",
+              "unit": "degrees"
+            }
+          }
+        }
+      }
+    }
+  }
+}
