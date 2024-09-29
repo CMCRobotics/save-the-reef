@@ -1,6 +1,13 @@
 import AFRAME from 'aframe';
-import AFrameSceneController from './AFrameSceneController';
-import * as nools from 'nools';
+import NoolsSceneController from './NoolsSceneController';
+
+import './components/caustics';
+import './components/bubble';
+import './components/floating-camera';
+import './components/custom-controls';
+import './components/gradient';
+import './components/simple-navmesh';
+import './components/surface-placer';
 
 // Polyfill global Buffer
 import { Buffer } from 'buffer';
@@ -8,10 +15,10 @@ window.Buffer = Buffer;
 
 
 
-AFRAME.registerComponent('reef-scene-controller', {
+AFRAME.registerComponent('scene-controller', {
   init: function() {
     // // Replace with your actual MQTT broker URL
-    this.controller = new AFrameSceneController('ws://localhost:9001');
+    this.controller = new NoolsSceneController('ws://localhost:9001');
     
     // // Add some initial corals
     this.controller.addCoral('coral1', 0.5);
