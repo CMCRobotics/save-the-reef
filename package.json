@@ -10,6 +10,8 @@
     "dependencies": {
         "@bcopy/homie-lit": "file:../homie-lit",
         "aframe": "^1.6.0",
+        "aframe-extras": "^7.5.1",
+        "@tweenjs/tween.js": "25.0.0",
         "browserify-zlib": "^0.2.0",
         "buffer": "^6.0.3",
         "https-browserify": "^1.0.0",
