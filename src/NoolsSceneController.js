@@ -18,7 +18,7 @@ class Tick {
   }
 }
 
-class AFrameSceneController {
+class NoolsSceneController {
   constructor(brokerUrl, mqttOptions = {}) {
     this.homieObserver = createMqttHomieObserver(brokerUrl, mqttOptions);
     this.homieObserver.subscribe("reef-1/#")
@@ -150,4 +150,4 @@ class AFrameSceneController {
   // }
 }
 
-export default AFrameSceneController;
+export default NoolsSceneController;
