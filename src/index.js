@@ -8,6 +8,7 @@ import './components/custom-controls';
 import './components/gradient';
 import './components/simple-navmesh';
 import './components/surface-placer';
+import './components/ocean-shader';
 
 // Polyfill global Buffer
 import { Buffer } from 'buffer';
