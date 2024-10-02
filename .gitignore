@@ -131,6 +131,6 @@ dist
 
 .npmrc
 
-public/assets/*.glb
-public/assets/*.obj
-public/assets/*.mtl
+*.glb
+*.obj
+*.mtl
