@@ -14,7 +14,7 @@ import './components/ocean-shader';
 import { Buffer } from 'buffer';
 window.Buffer = Buffer;
 
-
+const utils = AFRAME.utils;
 
 AFRAME.registerComponent('scene-controller', {
   init: function() {

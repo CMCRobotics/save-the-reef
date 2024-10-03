@@ -1,4 +1,21 @@
 
+
+function vectorChanged(oldVec, newVec) {
+  if (!oldVec || !newVec) return true;
+  return oldVec.x !== newVec.x || oldVec.y !== newVec.y || oldVec.z !== newVec.z;
+}
+
+function dataChanged(oldData, newData) {
+  if (!oldData) return true;
+  return (
+    vectorChanged(oldData.position, newData.position) ||
+    vectorChanged(oldData.normal, newData.normal) ||
+    oldData.originalParentScale !== newData.originalParentScale ||
+    oldData.scale !== newData.scale ||
+    oldData.leeway !== newData.leeway
+  );
+}
+
 AFRAME.registerComponent('surface-placer', {
     schema: {
       position: { type: 'vec3' },
@@ -15,7 +32,7 @@ AFRAME.registerComponent('surface-placer', {
     },
 
     update: function(oldData) {
-      if (this.dataChanged(oldData)) {
+      if (dataChanged(oldData, this.data)) {
         this.calculateBoundingBox();
         this.placeOnSurface();
       }
@@ -29,16 +46,11 @@ AFRAME.registerComponent('surface-placer', {
       }
     },
     
-    dataChanged: function(oldData) {
-      return (
-        // !AFRAME.utils.deepEqual(oldData.position, this.data.position) ||
-        // !AFRAME.utils.deepEqual(oldData.normal, this.data.normal) ||
-        // oldData.originalParentScale !== this.data.originalParentScale ||
-        // oldData.scale !== this.data.scale ||
-        // oldData.leeway !== this.data.leeway
-        true
-      );
-    },  
+    // s
+
+    // vectorChanged: function(oldVec, newVec) {
+    //   return oldVec.x !== newVec.x || oldVec.y !== newVec.y || oldVec.z !== newVec.z;
+    // },
 
     onModelLoaded: function() {
       this.calculateBoundingBox();
