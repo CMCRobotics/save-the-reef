@@ -6,3 +6,5 @@ curl -o ../public/assets/rock.glb               https://cmc-cdn.web.cern.ch/asse
 curl -o ../public/assets/shark.glb              https://cmc-cdn.web.cern.ch/assets/reef-simulator/shark.glb 
 curl -o ../public/assets/sea-turtle.glb         https://cmc-cdn.web.cern.ch/assets/reef-simulator/sea-turtle.glb 
 curl -o ../public/assets/water-plant.glb        https://cmc-cdn.web.cern.ch/assets/reef-simulator/water-plant.glb  
+
+curl -o ../public/assets/coral/agaricia-agaricites.glb  https://cmc-cdn.web.cern.ch/assets/reef-simulator/coral/agaricia-agaricites.glb  
