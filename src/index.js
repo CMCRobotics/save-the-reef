@@ -10,10 +10,6 @@ import './components/simple-navmesh';
 import './components/surface-placer';
 import './components/ocean-shader';
 
-// Polyfill global Buffer
-import { Buffer } from 'buffer';
-window.Buffer = Buffer;
-
 const utils = AFRAME.utils;
 
 AFRAME.registerComponent('scene-controller', {
