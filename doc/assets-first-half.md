@@ -18,10 +18,7 @@ https://sketchfab.com/3d-models/ice-cube-9843aff0343c45ad9aa2ba671b8feda6
 https://sketchfab.com/3d-models/ice-cubes-d7707a36243140659587e95ae1a6f232
 https://sketchfab.com/3d-models/coral-reef-9173277751fc483a95ade2ba67d09073
 
-https://sketchfab.com/3d-models/pocillopora-eydouxi-adf2d17b6355497cbadf6f7929bdd53f
 
 https://sketchfab.com/3d-models/coral-piece-bd879158d2c9496fa40eb9a8fd8e75f8
 
 https://sketchfab.com/3d-models/fan-coral-med-f438cf7717284f9ea70b8fbff89dc836
-
-https://sketchfab.com/3d-models/cartoon-seaweed-10-00d670cf071d498b9f20e6fe3e4fc347 - 15 dolhairs
