@@ -18,6 +18,7 @@ module.exports = {
     }),
     new webpack.ProvidePlugin({
       process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
     }),
     new CopyWebpackPlugin({
       patterns: [
@@ -53,9 +54,13 @@ module.exports = {
       "stream": require.resolve("stream-browserify"),
       "http": require.resolve("stream-http"),
       "https": require.resolve("https-browserify"),
-      "crypto": require.resolve("crypto-browserify")
+      "crypto": require.resolve("crypto-browserify"),
+      "buffer": require.resolve("buffer/")
     },
-    mainFields: ['module', 'main']
+    alias: {
+      '@bcopy/homie-lit': '@bcopy/homie-lit'
+    },
+    mainFields: ['module', 'browser', 'main']
   },
   devServer: {
     static: {

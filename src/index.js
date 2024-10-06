@@ -3,12 +3,14 @@ import NoolsSceneController from './NoolsSceneController';
 
 import './components/caustics';
 import './components/bubble';
-import './components/floating-camera';
-import './components/custom-controls';
+// import './components/floating-camera';
+// import './components/custom-controls';
 import './components/gradient';
-import './components/simple-navmesh';
-import './components/surface-placer';
+// import './components/simple-navmesh';
+// import './components/surface-placer';
 import './components/ocean-shader';
+
+import 'aframe-orbit-controls';
 
 // Polyfill global Buffer
 import { Buffer } from 'buffer';

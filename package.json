@@ -8,10 +8,11 @@
         "build": "webpack --mode production"
     },
     "dependencies": {
-        "@bcopy/homie-lit": "file://../homie-lit",
+        "@bcopy/homie-lit": "^0.5.8",
+        "@tweenjs/tween.js": "25.0.0",
         "aframe": "^1.6.0",
         "aframe-extras": "^7.5.1",
-        "@tweenjs/tween.js": "25.0.0",
+        "aframe-orbit-controls": "^1.3.2",
         "browserify-zlib": "^0.2.0",
         "buffer": "^6.0.3",
         "https-browserify": "^1.0.0",
