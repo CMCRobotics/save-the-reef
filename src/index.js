@@ -11,6 +11,7 @@ import './components/gradient';
 import './components/ocean-shader';
 
 import 'aframe-orbit-controls';
+import 'aframe-extras';
 
 // Polyfill global Buffer
 import { Buffer } from 'buffer';
