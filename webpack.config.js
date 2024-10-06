@@ -14,7 +14,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.html',
       filename: 'index.html',
-      inject:true
+      inject: false
     }),
     new webpack.ProvidePlugin({
       process: 'process/browser',

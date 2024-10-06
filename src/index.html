@@ -3,70 +3,114 @@
   <head>
     <meta charset="utf-8">
     <title>Save the reef</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+    
   </head>
   <body>
     <!-- scene-controller  -->
-    <a-scene>
+    <a-scene inspector="url: https://cdn.jsdelivr.net/gh/aframevr/aframe-inspector@master/dist/aframe-inspector.min.js">
       <a-assets>
         <img id="sandTexture" src="assets/sand.jpg">
-        <img id="skybox" src="assets/skybox.png">
         <a-asset-item id="triplets-model" src="assets/triplets.glb"></a-asset-item>
-        <a-asset-item id="plant-model" src="assets/water-plant.glb"></a-asset-item>
+        <!-- <a-asset-item id="plant-model" src="assets/water-plant.glb"></a-asset-item> -->
         
         <a-asset-item id="coral-acropora-cervicornis"     src="assets/coral/acropora-cervicornis.glb"></a-asset-item>
-        <a-asset-item id="coral-pseudodiploria-strigosa"  src="assets/coral/pseudodiploria-strigosa.glb"></a-asset-item>
+        <!-- <a-asset-item id="coral-pseudodiploria-strigosa"  src="assets/coral/pseudodiploria-strigosa.glb"></a-asset-item> -->
         <a-asset-item id="coral-millepora-alcicornis"     src="assets/coral/millepora-alcicornis.glb"></a-asset-item>
         <a-asset-item id="coral-montastrea-cavernosa"     src="assets/coral/montastrea-cavernosa.glb"></a-asset-item>
         <a-asset-item id="coral-dendrogyra-cylindricus"   src="assets/coral/dendrogyra-cylindricus.glb"></a-asset-item>
         <a-asset-item id="coral-agaricia-speciosa"        src="assets/coral/agaricia-speciosa.glb"></a-asset-item>
         <a-asset-item id="coral-acropora-prolifera"       src="assets/coral/acropora-prolifera.glb"></a-asset-item>
         <a-asset-item id="coral-acropora-palmata"         src="assets/coral/acropora-palmata.glb"></a-asset-item>
-        <a-asset-item id="coral-colpophyllia-natans"      src="assets/coral/colpophyllia-natans.glb"></a-asset-item>
+        <!-- <a-asset-item id="coral-colpophyllia-natans"      src="assets/coral/colpophyllia-natans.glb"></a-asset-item> -->
         <a-asset-item id="coral-eusmilia-fastigiata"      src="assets/coral/eusmilia-fastigiata.glb"></a-asset-item>
         <a-asset-item id="coral-meandrina-meandrites"     src="assets/coral/meandrina-meandrites.glb"></a-asset-item>
       </a-assets>
 
       <!-- Underwater floor with sand texture -->
-      <a-circle id="floor" position="0 0 -4" rotation="-90 0 0" radius="40" segments="80" 
-               material="src: #sandTexture; repeat: 5 5" shadow="receive: true"></a-circle>
+      <a-circle id="floor" position="0 0 0" rotation="-90 0 0" radius="40" segments="10" 
+               material="src: #sandTexture; repeat: 5 5" ></a-circle>
 
 
 
 
-      <a-entity id="triplets" gltf-model="#triplets-model" position="0 -1.5 0" scale="1.3 1.3 1.3">     
-        <a-entity id="plant" scale="0.02 0.02 0.02" gltf-model="#plant-model" ></a-entity>
+      <a-entity id="triplets" gltf-model="#triplets-model" position="0 -1.5 0" scale="1 1 1">     
+        <!-- <a-entity id="plant" scale="0.02 0.02 0.02" gltf-model="#plant-model" ></a-entity> -->
 
+        <a-box id="box1" scale="1 1 1" position="-3 1.5 14" material="opacity:0.5" ></a-box>
+
+        <!-- TOP SECTION -->
+        <!-- 6 to 8 at the top branching out from central point and interconnected  -->
+        <a-entity id="coral0-colony-0" position="-7.873 11.76823 1.3879">
+          <a-entity id="coral0-0" position="" rotation="0 36 0" scale="10 10 10" gltf-model="assets/coral/acropora-cervicornis.glb"></a-entity>
+          <a-entity id="coral0-1" position="-1.54511 -0.18841 -0.56191" rotation="0 -20 0" scale="10 10 9.5" gltf-model="assets/coral/acropora-cervicornis.glb"></a-entity>
+          <a-entity id="coral0-2" position="-0.37674 0.04703 -1.12541" rotation="0 90 0" scale="10 9.4 10" gltf-model="assets/coral/acropora-cervicornis.glb"></a-entity>
+          <a-entity id="coral0-3" position="-1.66789 -0.03089 0.27725" rotation="0 70 0" scale="9.5 10 10" gltf-model="assets/coral/acropora-cervicornis.glb"></a-entity>
+          <a-entity id="coral0-4" position="-0.94434 0 0.64132" rotation="0 -40 0" scale="8 9.5 10" gltf-model="assets/coral/acropora-cervicornis.glb"></a-entity>
+        </a-entity>
+
+        <!-- 2 to 3 at the top -->
+        <a-entity id="coral7-0" position="1.52418 9.60783 3.46774" scale="5 5 4.8"     gltf-model="#coral-acropora-palmata" rotation="0 0 -10"></a-entity>
+        <a-entity id="coral7-1" position="-4.89532 10.55592 3.23401" scale="5 4.5 4.5" gltf-model="#coral-acropora-palmata" rotation="10 -32 -5"></a-entity>
         
-        <a-entity id="coral0"  position="-3  1.32  15" scale="4 4 4"  gltf-model="#coral-acropora-cervicornis"></a-entity>
-        <a-entity id="coral1"  position="-2  1.32  15" scale="4 4 4"  gltf-model="#coral-pseudodiploria-strigosa"></a-entity>
-        <a-entity id="coral2"  position="-1  1.32  15" scale="2 2 2"  gltf-model="#coral-millepora-alcicornis"   ></a-entity>
-        <a-entity id="coral3"  position=" 0  1.32  15" scale="0.5 0.5 0.5"  gltf-model="#coral-montastrea-cavernosa"   ></a-entity>
-        <a-entity id="coral4"  position=" 1  1.32  15" scale="1 1 1"  gltf-model="#coral-dendrogyra-cylindricus" ></a-entity>
-        <a-entity id="coral5"  position=" 2  1.32  15" scale="5 5 5"  gltf-model="#coral-agaricia-speciosa"      ></a-entity>
-        <a-entity id="coral6"  position=" 3  1.32  15" scale="5 5 5"  gltf-model="#coral-acropora-prolifera"     ></a-entity>
-        <a-entity id="coral7"  position=" 5  1.32  15" scale="0.5 0.5 0.5"  gltf-model="#coral-acropora-palmata"       ></a-entity>
-        <a-entity id="coral8"  position=" 7  1.32  15" scale="0.5 0.5 0.5"  gltf-model="#coral-colpophyllia-natans"    ></a-entity>
-        <a-entity id="coral9"  position=" 9  1.32  15" scale="0.5 0.5 0.5"  gltf-model="#coral-eusmilia-fastigiata"    ></a-entity>
-        <a-entity id="coral10" position=" 11  1.32  15" scale="2 2 2" gltf-model="#coral-meandrina-meandrites"   ></a-entity>
+        <!-- 6 to 8 at the top branching out from central point and interconnected  -->
+        <a-entity id="coral6-colony-0" position="-4.22019 11.65432 0.94855">
+          <a-entity id="coral6-1" position="" rotation="-20 10 -40" scale="7.5 7.5 7.5" gltf-model="assets/coral/acropora-prolifera.glb"></a-entity>
+          <a-entity id="coral6-2" position="-0.51587 0.05911 -0.82358" rotation="-50 59.99999999999999 -40" scale="7.5 7.5 7.5" gltf-model="assets/coral/acropora-prolifera.glb"></a-entity>
+          <a-entity id="coral6-3" position="-1.21134 -0.04085 -1.02891" rotation="-20 110 -59.99999999999999" scale="7.5 7.5 7.5" gltf-model="assets/coral/acropora-prolifera.glb"></a-entity>
+          <a-entity id="coral6-4" position="-1.48629 -0.19937 0.16142" rotation="-58.400000000000006 -157.54 -33.74" scale="7.5 7.2 7.5" gltf-model="assets/coral/acropora-prolifera.glb"></a-entity>
+          <a-entity id="coral6-5" position="-1.57184 0.11083 -0.20698" rotation="-64.35 113.4 20.89" scale="7.1 7.5 7.3" gltf-model="assets/coral/acropora-prolifera.glb"></a-entity>
+          <a-entity id="coral6-6" position="-1.171 -0.294 0.809" rotation="73.76 15.120000000000001 93.84" scale="7 7.4 7.1" gltf-model="assets/coral/acropora-prolifera.glb"></a-entity>
+          <a-entity id="coral6-7" position="-0.43618 -0.08551 0.72353" rotation="-52.04 -66.36 -29.779999999999998" scale="7 7.5 7.2" gltf-model="assets/coral/acropora-prolifera.glb"></a-entity>
+        </a-entity>
+ 
+
+
+        <!-- MIDDLE SECTION  -->
+         <!--  brain coral : 8 to 10 in the middle, encrusting in a cluster, next to each other -->
+         <!-- <a-entity id="coral1-0" position="6.3464 9.11742 9.19782" scale="8 8 8" rotation="7.69768797758261 2.9094796836743204 0.3901842584840906" gltf-model="#coral-pseudodiploria-strigosa"></a-entity> -->
+         
+        <!-- great star coral : 6 to 8 in the middle, growing by 4 with one in the middle growing first -->
+        <a-entity id="coral3"  position="-4  1.32  15" scale="0.75 0.75 0.75"  gltf-model="#coral-montastrea-cavernosa"   ></a-entity>
+
+        <!-- pillar coral : 3 to 4 in the middle, growing as a clsuter dominant -->
+        <a-entity id="coral4"  position="-2  1.32  15" scale="3.5 3.5 3.5"  gltf-model="#coral-dendrogyra-cylindricus" ></a-entity>
+
+
+
+        <!-- BOTTOM SECTION -->
+         <!-- fire coral : 8 to 10 Grows around the edge where the current is stronger -->
+        <a-entity id="coral2"  position="0  1.32  15" scale="4.5 4.5 4.5"  gltf-model="#coral-millepora-alcicornis"   ></a-entity>
+        
+        <!-- plate coral : 10 to 12 grows horizontally spreading outwards -->
+        <a-entity id="coral5"  position=" 2  1.32  15" scale="8 8 8"  gltf-model="#coral-agaricia-speciosa"      ></a-entity>
+
+        <!-- boulder brain coral : 8 to 10, up to 3m across, growing apart, spread around -->
+        <!-- <a-entity id="coral8"  position=" 4  1.32  15" scale="0.9 0.9 0.9"  gltf-model="#coral-colpophyllia-natans"    ></a-entity> -->
+
+        <!-- flower coral : 8 to 10, up to 1m across growing outwards in all directions on top of each other like a bouquet -->
+        <a-entity id="coral9"  position=" 6  1.32  15" scale="0.8 0.8 0.8"  gltf-model="#coral-eusmilia-fastigiata"    ></a-entity>
+
+        <!-- Maze coral : 6 to 8 specimens, 2 meters across, growing horizontally initially apart from growing towards each other -->
+        <a-entity id="coral10" position=" 8  1.32  15" scale="6 3 6" gltf-model="#coral-meandrina-meandrites"   ></a-entity>
 
 
 
 
         </a-entity>
       </a-entity> 
-      <a-entity light="type: directional; color: #FFF; intensity: 0.6; target: #rock" position="1 1 1"></a-entity>
+      <a-light type="directional" color="#FFF" intensity="2.5" target="#rock" position="1 20 1"></a-light>
 
-      <a-entity light="type: directional; color: #FFF; intensity: 0.6; target: #coral2" position="1 1 1"></a-entity>
-      
       <!-- Ambient light to simulate underwater lighting -->
       <a-light type="ambient" color="#0C4B5F" intensity="0.3"></a-light>
 
       <!-- Underwater sky color -->
-      <a-sky src="#skybox" ></a-sky>
+      <a-sky ></a-sky>
     
   
       <!-- Camera -->
-      <a-entity id="player-camera" camera="near: 0.01; far: 10000" position="0 8 25" wasd-controls look-controls="pointerLockEnabled: true">
+      <a-entity id="player-camera" camera="near: 0.01; far: 10000" position="0 8 28" wasd-controls look-controls>
       </a-entity>
 
     </a-scene>
