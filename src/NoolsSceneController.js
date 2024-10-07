@@ -1,4 +1,4 @@
-import { createMqttHomieObserver, HomiePropertyBuffer } from '@bcopy/homie-lit';
+import { createMqttHomieObserver, HomiePropertyBuffer } from '@cmcrobotics/homie-lit';
 import * as nools from 'nools';
 
 
@@ -144,10 +144,6 @@ class NoolsSceneController {
     }
   }
 
-  // publishMqttMessage(topic, message) {
-  //   // Assuming the HomieObserver has a method to publish MQTT messages
-  //   this.homieObserver.publishMessage(topic, message);
-  // }
 }
 
 export default NoolsSceneController;

@@ -58,7 +58,7 @@ module.exports = {
       "buffer": require.resolve("buffer/")
     },
     alias: {
-      '@bcopy/homie-lit': '@bcopy/homie-lit'
+      '@cmcrobotics/homie-lit': '@cmcrobotics/homie-lit'
     },
     mainFields: ['module', 'browser', 'main']
   },
