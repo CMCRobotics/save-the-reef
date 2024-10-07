@@ -7,6 +7,7 @@ curl -o ../public/assets/rock.glb               https://cmc-cdn.web.cern.ch/asse
 curl -o ../public/assets/shark.glb              https://cmc-cdn.web.cern.ch/assets/reef-simulator/shark.glb 
 curl -o ../public/assets/sea-turtle.glb         https://cmc-cdn.web.cern.ch/assets/reef-simulator/sea-turtle.glb 
 curl -o ../public/assets/water-plant.glb        https://cmc-cdn.web.cern.ch/assets/reef-simulator/water-plant.glb  
+curl -o ../public/assets/skybox.png             https://cmc-cdn.web.cern.ch/assets/reef-simulator/skybox.png  
 
 curl -o ../public/assets/coral/acropora-cervicornis.glb        https://cmc-cdn.web.cern.ch/assets/reef-simulator/Coral%20Assets/acropora-cervicornis.glb
 curl -o ../public/assets/coral/acropora-palmata.glb            https://cmc-cdn.web.cern.ch/assets/reef-simulator/Coral%20Assets/acropora-palmata.glb
