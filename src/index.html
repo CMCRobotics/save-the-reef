@@ -29,16 +29,16 @@
 
 
       <!-- Underwater floor with sand texture -->
-      <a-circle id="floor" position="0 0 -4" rotation="-90 0 0" radius="40" segments="80" 
+      <a-circle id="floor" position="0 0 -4" rotation="-90 0 0" radius="120" segments="80" 
                material="src: #sandTexture; repeat: 5 5" shadow="receive: true"></a-circle>
                
 
       <!-- Stationary caustics effect using custom shader -->
-      <a-circle position="0 0.01 -4" rotation="-90 0 0" radius="40" segments="80" 
+      <a-circle position="0 0.01 -4" rotation="-90 0 0" radius="120" segments="80" 
                material="shader: stationary-caustics; color: #00aaff; transparent: true; blending: additive" shadow="receive: true"></a-circle>
 
       <!-- Water surface -->
-      <a-circle position="0 30 -4" rotation="-90 0 0" radius="80" segments="80" 
+      <a-circle position="0 30 -4" rotation="-90 0 0" radius="200" segments="80" 
                material="shader: water-surface; color: #7AD7F0; transparent: true; side: double"></a-circle>
 
       <!-- Bubble particle system -->
