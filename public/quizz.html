@@ -13,7 +13,6 @@
         <a-asset-item id="rock-model" src="assets/rock.glb"></a-asset-item>
         <a-asset-item id="player-model" src="assets/players/characterMediumAllAnimations.glb"></a-asset-item>
 
-        <img id="skin-alienA" src="assets/players/skins/alienA.png"/>
       </a-assets>
 
 
@@ -43,7 +42,7 @@
             
       <a-sky src="#skybox" ></a-sky>
 
-      <a-entity position="-8.5 0.1 30" rotation="0 90 0" arc-layout="radius: 10; startAngle: -40; endAngle: 40; itemSelector: .arc-item">
+      <a-entity id="team-1" position="-8.5 0.1 30" rotation="0 90 0" arc-layout="radius: 10; startAngle: -40; endAngle: 40; itemSelector: .arc-item">
         <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" rotation="0 90 0" texture-map="src: assets/players/skins/alienA.png" id="player-01" scale="1 1 1"></a-entity>
         <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-02" texture-map="src: assets/players/skins/alienB.png" rotation="0 -90 0" castShadow="true" animation-mixer="clip: Idle; loop:repeat" scale="1 1 1"></a-entity>
         <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-03" texture-map="src: assets/players/skins/animalA.png" rotation="0 -90 0" castShadow="true" animation-mixer="clip: Idle; loop:repeat" scale="1 1 1"></a-entity>
@@ -52,7 +51,7 @@
         <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-06" rotation="0 -90 0" castShadow="true" animation-mixer="clip: Idle; loop:repeat" scale="1 1 1"></a-entity>
       </a-entity>
 
-      <a-entity position="8.5 0.1 30" rotation="0 90 0" arc-layout="radius: 10; startAngle: -40; endAngle: 40; itemSelector: .arc-item">
+      <a-entity id="team-2" position="8.5 0.1 30" rotation="0 90 0" arc-layout="radius: 10; startAngle: -40; endAngle: 40; itemSelector: .arc-item">
         <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-07" rotation="0 -90 0" scale="1 1 1"></a-entity>
         <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-08" rotation="0 -90 0" scale="1 1 1"></a-entity>
         <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-09" rotation="0 -90 0" scale="1 1 1"></a-entity>
