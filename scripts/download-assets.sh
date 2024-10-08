@@ -1,4 +1,5 @@
 mkdir -p ../public/assets/coral
+mkdir -p ../public/assets/players/skins
 
 curl -o ../public/assets/bottlenose-dolphin.glb https://cmc-cdn.web.cern.ch/assets/reef-simulator/bottlenose-dolphin.glb  
 curl -o ../public/assets/green-turtle.glb       https://cmc-cdn.web.cern.ch/assets/reef-simulator/green-turtle.glb  
@@ -24,9 +25,6 @@ curl -o ../public/assets/coral/montastrea-cavernosa.glb        https://cmc-cdn.w
 curl -o ../public/assets/coral/pseudodiploria-strigosa.glb     https://cmc-cdn.web.cern.ch/assets/reef-simulator/Coral%20Assets/pseudodiploria-strigosa.glb
             
 
-
-
-
-
-
->>>>>>> Stashed changes
+curl -o ../public/assets/players/characterMediumAllAnimations.glb https://cmc-cdn.web.cern.ch/assets/kenney.nl/characterMediumAllAnimations.glb
+curl -o /tmp/skins.zip https://cmc-cdn.web.cern.ch/assets/kenney.nl/skins.zip
+unzip -o /tmp/skins.zip -d ../public/assets/players/ && rm /tmp/skins.zip
