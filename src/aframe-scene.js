@@ -1,5 +1,5 @@
 import AFRAME from 'aframe';
-import NoolsSceneController from './NoolsSceneController';
+import NoolsSceneController from './reef/NoolsSceneController';
 
 import './components/caustics';
 import './components/bubble';
@@ -25,10 +25,10 @@ AFRAME.registerComponent('scene-controller', {
     this.controller = new NoolsSceneController('ws://localhost:9001');
     
     // // Add some initial corals
-    this.controller.addCoral('coral1', 0.5);
-    this.controller.addCoral('coral2', 0.7);
-    this.controller.addCoral('coral3', 0.6);
-    // console.log("Hello Wonderful World");
+    // this.controller.addCoral('coral1', 0.5);
+    // this.controller.addCoral('coral2', 0.7);
+    // this.controller.addCoral('coral3', 0.6);
+    console.log("Hello Wonderful World");
   },
   
 //   tick: function(time, timeDelta) {

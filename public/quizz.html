@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Quizz</title>
+    <script defer src="quizz.bundle.js"></script>
+  </head>
+  <body>
+    <a-scene fog="type: exponential; color: #0C4B5F; near: 0.5; far: 60; density: 0.001" shadow="type: pcfsoft">
+      <a-assets>
+        <img id="sandTexture" src="assets/sand.jpg"/>
+        <img id="skybox" src="assets/skybox.png"/>
+        <a-asset-item id="rock-model" src="assets/rock.glb"></a-asset-item>
+        <a-asset-item id="player-model" src="assets/players/characterMediumAllAnimations.glb"></a-asset-item>
+
+      </a-assets>
+
+
+      <!-- Underwater floor with sand texture -->
+      <a-circle id="floor" position="0 0 -4" rotation="-90 0 0" radius="120" segments="80" 
+               material="src: #sandTexture; repeat: 5 5" shadow="receive: true"></a-circle>
+               
+
+      <!-- Stationary caustics effect using custom shader -->
+      <a-circle position="0 0.01 -4" rotation="-90 0 0" radius="120" segments="80" 
+               material="shader: stationary-caustics; color: #00aaff; transparent: true; blending: additive" shadow="receive: true"></a-circle>
+
+      <!-- Water surface -->
+      <a-circle position="0 30 -4" rotation="-90 0 0" radius="200" segments="80" 
+               material="shader: water-surface; color: #7AD7F0; transparent: true; side: double"></a-circle>
+
+
+      <a-entity id="rock" gltf-model="#rock-model" position="0 -0.391 0" scale="1 1 1">
+
+      </a-entity>
+      <a-entity light="type: directional; color: #FFF; intensity: 0.4; target: #rock" position="1 1 1"></a-entity>
+
+      <a-light type="ambient" color="#0C4B5F" intensity="0.3"></a-light>
+
+      <a-light id="light-floor" type="directional" target="#floor" color="#ffffff" intensity="0.6" position="0 14 15" castShadow="true" 
+               shadow="mapSize: 2048x2048; bias: -0.001; near: 0.3; far: 50"></a-light>
+            
+      <a-sky src="#skybox" ></a-sky>
+
+      <a-entity id="team-1" position="-8.5 0.1 30" rotation="0 90 0" arc-layout="radius: 10; startAngle: -40; endAngle: 40; itemSelector: .arc-item">
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" rotation="0 90 0" texture-map="src: assets/players/skins/alienA.png" id="player-01" scale="1 1 1"></a-entity>
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-02" texture-map="src: assets/players/skins/alienB.png" rotation="0 -90 0" castShadow="true" animation-mixer="clip: Idle; loop:repeat" scale="1 1 1"></a-entity>
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-03" texture-map="src: assets/players/skins/animalA.png" rotation="0 -90 0" castShadow="true" animation-mixer="clip: Idle; loop:repeat" scale="1 1 1"></a-entity>
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-04" rotation="0 -90 0" castShadow="true" animation-mixer="clip: Idle; loop:repeat" scale="1 1 1"></a-entity>
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-05" rotation="0 -90 0" castShadow="true" animation-mixer="clip: Idle; loop:repeat" scale="1 1 1"></a-entity>
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-06" rotation="0 -90 0" castShadow="true" animation-mixer="clip: Idle; loop:repeat" scale="1 1 1"></a-entity>
+      </a-entity>
+
+      <a-entity id="team-2" position="8.5 0.1 30" rotation="0 90 0" arc-layout="radius: 10; startAngle: -40; endAngle: 40; itemSelector: .arc-item">
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-07" rotation="0 -90 0" scale="1 1 1"></a-entity>
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-08" rotation="0 -90 0" scale="1 1 1"></a-entity>
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-09" rotation="0 -90 0" scale="1 1 1"></a-entity>
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-10" rotation="0 -90 0" scale="1 1 1"></a-entity>
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-11" rotation="0 -90 0" scale="1 1 1"></a-entity>
+        <a-entity class="arc-item" look-towards="#camera" gltf-model="#player-model" id="player-12" rotation="0 -90 0" scale="1 1 1"></a-entity>
+      </a-entity>
+
+
+      <a-entity camera id="camera" fov="50" position="0 7 36" target="#rock" wasd-controls>
+      </a-entity>
+
+    </a-scene>
+  </body>
+</html>
