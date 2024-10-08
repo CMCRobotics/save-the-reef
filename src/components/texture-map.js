@@ -1,4 +1,4 @@
-import { TextureLoader, SkinnedMesh } from 'three';
+import { TextureLoader } from 'three';
 
 AFRAME.registerComponent('texture-map', {
     schema: {
@@ -12,10 +12,8 @@ AFRAME.registerComponent('texture-map', {
       const loader = new TextureLoader();
 
       loader.load(src, function (texture) {
-        // texture.encoding = sRGBEncoding;
         texture.flipY = false;
         el.object3D.traverse(function (node) {
-          console.log(typeof node);
           if (node.isSkinnedMesh) {
             node.material.map = texture;
             node.material.roughness = roughness;
