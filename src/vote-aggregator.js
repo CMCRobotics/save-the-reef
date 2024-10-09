@@ -18,9 +18,10 @@ async function getSerialPort() {
 }
 
 class VoteAggregator extends HomieDevice {
-  constructor() {
-    super('vote-aggregator');
+  constructor(homieObserver) {
+    super('vote');
     this.buffer = '';
+    this.homieObserver = homieObserver;
     this.setupWebUSB();
   }
 
@@ -64,8 +65,6 @@ class VoteAggregator extends HomieDevice {
 
   processCompleteLine(line) {
     console.log("Received complete vote:", line);
-    // Here you can add the logic to process the complete vote line
-    // For example, calling a method to update Homie properties
     this.processVote(line);
   }
 
@@ -86,6 +85,10 @@ class VoteAggregator extends HomieDevice {
 
     voteProperty.setValue(choice);
     timestampProperty.setValue(new Date().toISOString());
+
+    // Publish updated properties
+    this.publishProperty(terminalNode, voteProperty);
+    this.publishProperty(terminalNode, timestampProperty);
   }
 
   createTerminalNode(terminalId) {
@@ -93,7 +96,37 @@ class VoteAggregator extends HomieDevice {
     node.addProperty(new HomieProperty('vote', 'Vote', 'string'));
     node.addProperty(new HomieProperty('timestamp', 'Timestamp', 'datetime'));
     this.addNode(node);
+
+    // Publish node and properties
+    this.publishTerminalVoteNode(node);
+
     return node;
+  }
+
+  publishTerminalVoteNode(node) {
+    const baseTopic = `${this.name}/${node.name}`;
+    
+    // Publish node properties
+    this.homieObserver.publish(`${baseTopic}/$name`, node.name, { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$type`, 'Terminal Vote', { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$properties`, 'vote,timestamp', { retain: true });
+
+    // Publish each property
+    node.getAllProperties().forEach(property => {
+      this.publishPropertyAttributes(node, property);
+    });
+  }
+
+  publishPropertyAttributes(node, property) {
+    const baseTopic = `${this.name}/${node.name}/${property.name}`;
+    
+    this.homieObserver.publish(`${baseTopic}/$name`, property.name, { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$datatype`, property.dataType, { retain: true });
+  }
+
+  publishProperty(node, property) {
+    const topic = `${this.name}/${node.name}/${property.name}`;
+    this.homieObserver.publish(topic, property.getValue().toString(), { retain: true });
   }
 }
 
@@ -101,9 +134,9 @@ async function initializeVoteAggregator() {
     const mqttUrl = 'ws://localhost:9001';
     const homieObserver = createMqttHomieObserver(mqttUrl);
 
-    homieObserver.subscribe("vote/#")
+    homieObserver.subscribe("vote/#");
 
-    const voteAggregator = new VoteAggregator();
+    const voteAggregator = new VoteAggregator(homieObserver);
 
     homieObserver.created$.pipe(
       filter(event => event.type === 'device' && event.device.id === voteAggregator.id)
