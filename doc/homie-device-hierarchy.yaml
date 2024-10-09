@@ -255,3 +255,50 @@ devices:
             name: Display Luminosity
             datatype: integer
             unit: "%"
+  vote:
+    name: Voting round
+    state: ready
+    nodes:
+      config:
+        name: Voting Configuration
+        type: config
+        properties:
+          question-id:
+            name: Current Question ID
+            datatype: string
+          question-statement:
+            name: Question Statement
+            datatype: string
+          voting-open:
+            name: Voting Status
+            datatype: boolean
+          total-votes:
+            name: Total Votes Cast
+            datatype: integer
+          option-1:
+            name: Option 1
+            datatype: string
+          option-2:
+            name: Option 2
+            datatype: string
+          option-3:
+            name: Option 3
+            datatype: string
+          option-4:
+            name: Option 4
+            datatype: string
+          correct-option:
+            name: Correct option index
+            datatype: integer
+      player-X:
+        name: Player x
+        type: player
+        properties:
+          vote:
+            name: Player X Vote
+            datatype: string
+          timestamp:
+            name: Vote Timestamp
+            datatype: datetime
+
+      
