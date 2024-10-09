@@ -19,19 +19,15 @@ window.Buffer = Buffer;
 
 const utils = AFRAME.utils;
 
-// AFRAME.registerComponent('scene-controller', {
-//   init: function() {
-//     // // Replace with your actual MQTT broker URL
-//     this.controller = new QuizzSceneController('ws://localhost:9001');
+AFRAME.registerComponent('scene-controller', {
+  init: function() {
+    // TODO: Replace this with actual MQTT broker
+    this.controller = new QuizzSceneController('ws://localhost:9001');
     
-//     // // Add some initial corals
-//     // this.controller.addCoral('coral1', 0.5);
-//     // this.controller.addCoral('coral2', 0.7);
-//     // this.controller.addCoral('coral3', 0.6);
-//     // console.log("Hello Wonderful World");
-//   },
+    console.log("Hello Wonderful Quizz");
+  },
   
 // //   tick: function(time, timeDelta) {
 // //     // You can add additional per-frame logic here if needed
 // //   }
-// });
+});
