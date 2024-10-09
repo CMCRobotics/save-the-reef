@@ -17,12 +17,11 @@ async function getSerialPort() {
     return null;
 }
 
-
 class VoteAggregator extends HomieDevice {
   constructor() {
     super('vote-aggregator');
+    this.buffer = '';
     this.setupWebUSB();
-    // this.setupVoteProcessing();
   }
 
   async setupWebUSB() {
@@ -46,96 +45,82 @@ class VoteAggregator extends HomieDevice {
           this.reader.releaseLock();
           break;
         }
-        // this.processVote(value.trim());
-        console.log("Received vote ", value.trim());
+        this.processIncomingData(value);
       }
     } catch (error) {
       console.error('Error reading from micro:bit:', error);
     }
   }
 
-//   processVote(voteData) {
-//     const [, terminalId, choice] = voteData.split(',');
-//     if (!terminalId || !choice) {
-//       console.error('Invalid vote data:', voteData);
-//       return;
-//     }
+  processIncomingData(chunk) {
+    this.buffer += chunk;
+    let newlineIndex;
+    while ((newlineIndex = this.buffer.indexOf('\n')) !== -1) {
+      const line = this.buffer.slice(0, newlineIndex).trim();
+      this.buffer = this.buffer.slice(newlineIndex + 1);
+      this.processCompleteLine(line);
+    }
+  }
 
-//     let terminalNode = this.getNode(`terminal-${terminalId}`);
-//     if (!terminalNode) {
-//       terminalNode = this.createTerminalNode(terminalId);
-//     }
+  processCompleteLine(line) {
+    console.log("Received complete vote:", line);
+    // Here you can add the logic to process the complete vote line
+    // For example, calling a method to update Homie properties
+    this.processVote(line);
+  }
 
-//     const voteProperty = terminalNode.getProperty('vote');
-//     const timestampProperty = terminalNode.getProperty('timestamp');
+  processVote(voteData) {
+    const [prefix, terminalId, choice] = voteData.split(',');
+    if (prefix !== 'VOTE:VOTE' || !terminalId || !choice) {
+      console.error('Invalid vote data:', voteData);
+      return;
+    }
 
-//     voteProperty.setValue(choice);
-//     timestampProperty.setValue(new Date().toISOString());
-//   }
+    let terminalNode = this.getNode(`terminal-${terminalId}`);
+    if (!terminalNode) {
+      terminalNode = this.createTerminalNode(terminalId);
+    }
 
-//   createTerminalNode(terminalId) {
-//     const node = new HomieNode(`terminal-${terminalId}`, 'Terminal Vote');
-//     node.addProperty(new HomieProperty('vote', 'Vote', 'string'));
-//     node.addProperty(new HomieProperty('timestamp', 'Timestamp', 'datetime'));
-//     this.addNode(node);
-//     return node;
-//   }
+    const voteProperty = terminalNode.getProperty('vote');
+    const timestampProperty = terminalNode.getProperty('timestamp');
 
-//   setupVoteProcessing() {
-//     // Create an observable for vote updates
-//     this.voteUpdates$ = new Observable(subscriber => {
-//       this.on('property/vote', (node, property) => {
-//         subscriber.next({ node, property });
-//       });
-//     }).pipe(
-//       map(({ node, property }) => ({
-//         terminalId: node.id.split('-')[1],
-//         vote: property.getValue()
-//       }))
-//     );
+    voteProperty.setValue(choice);
+    timestampProperty.setValue(new Date().toISOString());
+  }
 
-//     // Subscribe to vote updates
-//     this.voteUpdates$.subscribe(({ terminalId, vote }) => {
-//       console.log(`Received vote from terminal ${terminalId}: ${vote}`);
-//       // Here you can add any additional processing or forwarding logic
-//     });
-//   }
-
+  createTerminalNode(terminalId) {
+    const node = new HomieNode(`terminal-${terminalId}`, 'Terminal Vote');
+    node.addProperty(new HomieProperty('vote', 'Vote', 'string'));
+    node.addProperty(new HomieProperty('timestamp', 'Timestamp', 'datetime'));
+    this.addNode(node);
+    return node;
+  }
 }
 
-async function initializeVoteAggregator(){
-
-    // Setup MQTT connection and Homie observer
+async function initializeVoteAggregator() {
     const mqttUrl = 'ws://localhost:9001';
     const homieObserver = createMqttHomieObserver(mqttUrl);
 
     homieObserver.subscribe("vote/#")
 
-    // Create and initialize the VoteAggregator
     const voteAggregator = new VoteAggregator();
 
-    // Connect the VoteAggregator to the MQTT broker
     homieObserver.created$.pipe(
-    filter(event => event.type === 'device' && event.device.id === voteAggregator.id)
+      filter(event => event.type === 'device' && event.device.id === voteAggregator.id)
     ).subscribe(() => {
-    console.log('VoteAggregator connected to MQTT broker');
+      console.log('VoteAggregator connected to MQTT broker');
     });
 
     // Initialize the Homie device
     // voteAggregator.init();
-};
+}
 
 document.getElementById('connectButton').addEventListener('click', async () => {
     try {
-        if (typeof initializeVoteAggregator === 'function') {
-            await initializeVoteAggregator();
-            document.getElementById('status').textContent = 'Connected successfully!';
-        } else {
-            throw new Error('initializeVoteAggregator function not found');
-        }
+        await initializeVoteAggregator();
+        document.getElementById('status').textContent = 'Connected successfully!';
     } catch (error) {
         console.error('Error:', error);
         document.getElementById('status').textContent = 'Connection failed: ' + error.message;
     }
 });
-
