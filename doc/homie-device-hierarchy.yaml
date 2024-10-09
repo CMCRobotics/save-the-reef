@@ -290,15 +290,15 @@ devices:
           correct-option:
             name: Correct option index
             datatype: integer
-      player-X:
-        name: Player x
-        type: player
+      terminal-X:
+        name: Terminal x vote node
+        type: terminal-vote
         properties:
           vote:
-            name: Player X Vote
+            name: Terminal X vote
             datatype: string
           timestamp:
-            name: Vote Timestamp
+            name: Terminal X vote Timestamp
             datatype: datetime
 
       

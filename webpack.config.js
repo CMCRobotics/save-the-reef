@@ -6,7 +6,8 @@ module.exports = {
   entry: {
     aframe: './src/aframe-scene.js',
     quizz: './src/quizz-scene.js',
-    presentation: './src/reveal-presentation.js'
+    presentation: './src/reveal-presentation.js',
+    voteAggregator: './src/vote-aggregator.js'
   },
   output: {
     filename: '[name].bundle.js',
