@@ -17,11 +17,13 @@ async function getSerialPort() {
     return null;
 }
 
-class VoteAggregator extends HomieDevice {
+class Gateway {
   constructor(homieObserver) {
-    super('vote');
-    this.buffer = '';
     this.homieObserver = homieObserver;
+    this.terminals = new Map();
+    this.currentMode = 'VOTING';
+    this.buffer = '';
+    this.writer = null;
     this.setupWebUSB();
   }
 
@@ -31,6 +33,11 @@ class VoteAggregator extends HomieDevice {
       const textDecoder = new TextDecoderStream();
       const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
       this.reader = textDecoder.readable.getReader();
+      
+      const textEncoder = new TextEncoderStream();
+      const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
+      this.writer = textEncoder.writable.getWriter();
+      
       console.log('Connected to micro:bit');
       this.startReading();
     } catch (error) {
@@ -59,99 +66,194 @@ class VoteAggregator extends HomieDevice {
     while ((newlineIndex = this.buffer.indexOf('\n')) !== -1) {
       const line = this.buffer.slice(0, newlineIndex).trim();
       this.buffer = this.buffer.slice(newlineIndex + 1);
-      this.processCompleteLine(line);
+      this.processData(line);
     }
   }
 
-  processCompleteLine(line) {
-    console.log("Received complete vote:", line);
-    this.processVote(line);
-  }
-
-  processVote(voteData) {
-    const [prefix, terminalId, choice] = voteData.split(',');
-    if (prefix !== 'VOTE' || !terminalId || !choice) {
-      console.error('Invalid vote data:', voteData);
+  processData(data) {
+    const [prefix, terminalId, value] = data.split(',');
+    if (!terminalId || !value) {
+      console.error('Invalid data:', data);
       return;
     }
 
-    let terminalNode = this.getNode(`terminal-${terminalId}`);
-    if (!terminalNode) {
-      terminalNode = this.createTerminalNode(terminalId);
+    const deviceId = `terminal-${terminalId}`;
+    let terminal = this.terminals.get(deviceId);
+    if (!terminal) {
+      terminal = this.createTerminalDevice(deviceId);
+      this.terminals.set(deviceId, terminal);
     }
 
-    const voteProperty = terminalNode.getProperty('vote');
-    const timestampProperty = terminalNode.getProperty('timestamp');
+    if (prefix === 'VOTE' && this.currentMode === 'VOTING') {
+      this.processVote(terminal, value);
+    } else if (prefix === 'SENS' && this.currentMode === 'SENSOR') {
+      this.processSensorData(terminal, value);
+    } else {
+      console.error('Invalid prefix or mode mismatch:', prefix, this.currentMode);
+    }
+  }
 
-    voteProperty.setValue(choice);
+  processVote(terminal, value) {
+    const voteNode = terminal.getNode('vote');
+    if (!voteNode) {
+      console.error('Vote node not found for terminal:', terminal.id);
+      return;
+    }
+
+    const optionProperty = voteNode.getProperty('option');
+    const timestampProperty = voteNode.getProperty('timestamp');
+
+    optionProperty.setValue(value);
     timestampProperty.setValue(new Date().toISOString());
 
-    // Publish updated properties
-    this.publishProperty(terminalNode, voteProperty);
-    this.publishProperty(terminalNode, timestampProperty);
+    this.publishProperty(terminal.id, 'vote', optionProperty);
+    this.publishProperty(terminal.id, 'vote', timestampProperty);
   }
 
-  createTerminalNode(terminalId) {
-    const node = new HomieNode(`terminal-${terminalId}`, 'Terminal Vote');
-    node.addProperty(new HomieProperty('vote', 'Vote', 'string'));
-    node.addProperty(new HomieProperty('timestamp', 'Timestamp', 'datetime'));
-    this.addNode(node);
+  processSensorData(terminal, value) {
+    const buttonNodeId = `button-${value.toLowerCase()}`;
+    const buttonNode = terminal.getNode(buttonNodeId);
+    if (!buttonNode) {
+      console.error(`Button node not found for terminal: ${terminal.id}, button: ${value}`);
+      return;
+    }
 
-    // Publish node and properties
-    this.publishTerminalVoteNode(node);
+    const stateProperty = buttonNode.getProperty('state');
+    const timestampProperty = buttonNode.getProperty('timestamp');
 
-    return node;
+    stateProperty.setValue('pressed');
+    timestampProperty.setValue(new Date().toISOString());
+
+    this.publishProperty(terminal.id, buttonNodeId, stateProperty);
+    this.publishProperty(terminal.id, buttonNodeId, timestampProperty);
+
+    // Reset the button state after a short delay
+    setTimeout(() => {
+      stateProperty.setValue('released');
+      this.publishProperty(terminal.id, buttonNodeId, stateProperty);
+    }, 500);
   }
 
-  publishTerminalVoteNode(node) {
-    const baseTopic = `${this.name}/${node.name}`;
+  createTerminalDevice(deviceId) {
+    const terminal = new HomieDevice(deviceId);
     
-    // Publish node properties
-    this.homieObserver.publish(`${baseTopic}/$name`, node.name, { retain: true });
-    this.homieObserver.publish(`${baseTopic}/$type`, 'Terminal Vote', { retain: true });
-    this.homieObserver.publish(`${baseTopic}/$properties`, 'vote,timestamp', { retain: true });
+    // Create vote node
+    const voteNode = new HomieNode('vote', 'Vote', 'vote');
+    voteNode.addProperty(new HomieProperty('option','Option',undefined,'string','0,1,2,3'));
+    voteNode.addProperty(new HomieProperty('timestamp','Timestamp',undefined, 'datetime','ISO 8601'));
+    terminal.addNode(voteNode);
 
-    // Publish each property
-    node.getAllProperties().forEach(property => {
-      this.publishPropertyAttributes(node, property);
+    // Create button nodes
+    const buttonANode = new HomieNode('button-a', 'Button A');
+    buttonANode.addProperty(new HomieProperty('state','State',undefined, 'enum','pressed,released'));
+    buttonANode.addProperty(new HomieProperty('timestamp','Timestamp',undefined, 'datetime','ISO 8601'));
+    terminal.addNode(buttonANode);
+
+    const buttonBNode =  new HomieNode('button-b', 'Button B');
+    buttonBNode.addProperty(new HomieProperty('state','State',undefined, 'enum','pressed,released'));
+    buttonBNode.addProperty(new HomieProperty('timestamp','Timestamp',undefined, 'datetime','ISO 8601'));
+    terminal.addNode(buttonBNode);
+    
+    // Publish device and nodes
+    this.publishTerminalDevice(terminal);
+
+    return terminal;
+  }
+
+  publishTerminalDevice(terminal) {
+    const baseTopic = `homie/${terminal.id}`;
+    
+    // Publish device properties
+    this.homieObserver.publish(`${baseTopic}/$homie`, '4.0', { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$name`, `Terminal ${terminal.id.split('-')[1]}`, { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$nodes`, 'vote,button-a,button-b', { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$extensions`, '', { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$implementation`, 'custom', { retain: true });
+
+    // Publish nodes
+    terminal.nodes.forEach(node => {
+      this.publishNode(terminal.id, node);
     });
   }
 
-  publishPropertyAttributes(node, property) {
-    const baseTopic = `${this.name}/${node.name}/${property.name}`;
+  publishNode(deviceId, node) {
+    const baseTopic = `homie/${deviceId}/${node.id}`;
     
-    this.homieObserver.publish(`${baseTopic}/$name`, property.name, { retain: true });
-    this.homieObserver.publish(`${baseTopic}/$datatype`, property.dataType, { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$name`, node.name, { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$type`, node.id, { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$properties`, node.properties.keys().toArray().join(','), { retain: true });
+
+    // Publish properties for this node
+    Object.values(node.properties).forEach(property => {
+      this.publishPropertyAttributes(deviceId, node.id, property);
+    });
   }
 
-  publishProperty(node, property) {
-    const topic = `${this.name}/${node.name}/${property.name}`;
+  publishPropertyAttributes(deviceId, nodeId, property) {
+    const baseTopic = `homie/${deviceId}/${nodeId}/${property.id}`;
+    
+    this.homieObserver.publish(`${baseTopic}/$name`, property.name, { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$datatype`, property.datatype, { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$format`, property.format, { retain: true });
+  }
+
+  publishProperty(deviceId, nodeId, property) {
+    const topic = `homie/${deviceId}/${nodeId}/${property.id}`;
     this.homieObserver.publish(topic, property.getValue().toString(), { retain: true });
+  }
+
+  async switchMode(newMode) {
+    if (newMode !== 'VOTING' && newMode !== 'SENSOR') {
+      console.error('Invalid mode:', newMode);
+      return;
+    }
+
+    if (newMode === this.currentMode) {
+      console.log(`Already in ${newMode} mode`);
+      return;
+    }
+
+    this.currentMode = newMode;
+    console.log(`Switching to ${newMode} mode`);
+
+    // Send mode change command to the bridge
+    const command = `MODE:${newMode}\n`;
+    await this.writer.write(command);
+
+    // Publish mode change to MQTT for each terminal
+    this.terminals.forEach(terminal => {
+      this.homieObserver.publish(`homie/${terminal.id}/mode`, this.currentMode, { retain: true });
+    });
   }
 }
 
-async function initializeVoteAggregator() {
+async function initializeGateway() {
     const mqttUrl = 'ws://localhost:9001';
     const homieObserver = createMqttHomieObserver(mqttUrl);
 
-    homieObserver.subscribe("vote/#");
+    homieObserver.subscribe("homie/terminal-+/#");
 
-    const voteAggregator = new VoteAggregator(homieObserver);
+    const gateway = new Gateway(homieObserver);
 
-    homieObserver.created$.pipe(
-      filter(event => event.type === 'device' && event.device.id === voteAggregator.id)
-    ).subscribe(() => {
-      console.log('VoteAggregator connected to MQTT broker');
-    });
-
-    // Initialize the Homie device
-    // voteAggregator.init();
+    return gateway;
 }
 
 document.getElementById('connectButton').addEventListener('click', async () => {
     try {
-        await initializeVoteAggregator();
+        const gateway = await initializeGateway();
         document.getElementById('status').textContent = 'Connected successfully!';
+
+        // Add mode switching buttons
+        const votingButton = document.createElement('button');
+        votingButton.textContent = 'Switch to Voting Mode';
+        votingButton.addEventListener('click', () => gateway.switchMode('VOTING'));
+        document.body.appendChild(votingButton);
+
+        const sensorButton = document.createElement('button');
+        sensorButton.textContent = 'Switch to Sensor Mode';
+        sensorButton.addEventListener('click', () => gateway.switchMode('SENSOR'));
+        document.body.appendChild(sensorButton);
+
     } catch (error) {
         console.error('Error:', error);
         document.getElementById('status').textContent = 'Connection failed: ' + error.message;
