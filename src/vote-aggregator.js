@@ -70,7 +70,7 @@ class VoteAggregator extends HomieDevice {
 
   processVote(voteData) {
     const [prefix, terminalId, choice] = voteData.split(',');
-    if (prefix !== 'VOTE:VOTE' || !terminalId || !choice) {
+    if (prefix !== 'VOTE' || !terminalId || !choice) {
       console.error('Invalid vote data:', voteData);
       return;
     }
