@@ -73,7 +73,7 @@ class Gateway {
   processData(data) {
     const [prefix, terminalId, value] = data.split(',');
     if (!terminalId || !value) {
-      console.error('Invalid data:', data);
+      console.log('Invalid data, ignoring:', data);
       return;
     }
 
@@ -161,7 +161,7 @@ class Gateway {
   }
 
   publishTerminalDevice(terminal) {
-    const baseTopic = `homie/${terminal.id}`;
+    const baseTopic = `${terminal.id}`;
     
     // Publish device properties
     this.homieObserver.publish(`${baseTopic}/$homie`, '4.0', { retain: true });
@@ -177,7 +177,7 @@ class Gateway {
   }
 
   publishNode(deviceId, node) {
-    const baseTopic = `homie/${deviceId}/${node.id}`;
+    const baseTopic = `${deviceId}/${node.id}`;
     
     this.homieObserver.publish(`${baseTopic}/$name`, node.name, { retain: true });
     this.homieObserver.publish(`${baseTopic}/$type`, node.id, { retain: true });
@@ -190,7 +190,7 @@ class Gateway {
   }
 
   publishPropertyAttributes(deviceId, nodeId, property) {
-    const baseTopic = `homie/${deviceId}/${nodeId}/${property.id}`;
+    const baseTopic = `${deviceId}/${nodeId}/${property.id}`;
     
     this.homieObserver.publish(`${baseTopic}/$name`, property.name, { retain: true });
     this.homieObserver.publish(`${baseTopic}/$datatype`, property.datatype, { retain: true });
@@ -198,7 +198,7 @@ class Gateway {
   }
 
   publishProperty(deviceId, nodeId, property) {
-    const topic = `homie/${deviceId}/${nodeId}/${property.id}`;
+    const topic = `${deviceId}/${nodeId}/${property.id}`;
     this.homieObserver.publish(topic, property.getValue().toString(), { retain: true });
   }
 
