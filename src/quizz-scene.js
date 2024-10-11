@@ -1,5 +1,5 @@
 import AFRAME from 'aframe';
-import QuizzSceneController from './quizz/QuizzSceneController';
+import TutorialSceneController from './scene-tutorial/TutorialSceneController';
 
 import './components/caustics';
 import './components/floating-camera';
@@ -17,17 +17,12 @@ import 'aframe-htmlembed-component';
 import { Buffer } from 'buffer';
 window.Buffer = Buffer;
 
-const utils = AFRAME.utils;
 
 AFRAME.registerComponent('scene-controller', {
   init: function() {
-    // TODO: Replace this with actual MQTT broker
-    this.controller = new QuizzSceneController('ws://localhost:9001');
+    // TODO: Replace with actual MQTT broker
+    this.controller = new TutorialSceneController('ws://localhost:9001', "team-1");
     
-    console.log("Hello Wonderful Quizz");
-  },
-  
-// //   tick: function(time, timeDelta) {
-// //     // You can add additional per-frame logic here if needed
-// //   }
+    console.log("Hello shiny happy people");
+  }
 });

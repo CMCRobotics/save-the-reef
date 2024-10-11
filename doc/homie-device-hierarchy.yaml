@@ -127,21 +127,24 @@ devices:
           nickname:
             name: Player Nickname
             datatype: string
-          position:
-            name: Player Position
-            datatype: json
-          rotation:
-            name: Player Rotation
-            datatype: json
-          scale:
-            name: Player Scale
-            datatype: float
-          last-action:
-            name: Last Action Timestamp
-            datatype: datetime
-          action-duration:
-            name: Action Duration
-            datatype: duration
+          # position:
+          #   name: Player Position
+          #   datatype: json
+          # rotation:
+          #   name: Player Rotation
+          #   datatype: json
+          # scale:
+          #   name: Player Scale
+          #   datatype: float
+          active:
+            name: Player active flag
+            datatype: boolean
+          # last-action:
+          #   name: Last Action Timestamp
+          #   datatype: datetime
+          # action-duration:
+          #   name: Action Duration
+          #   datatype: duration
           animation:
             name: Animation
             datatype: string
@@ -151,20 +154,23 @@ devices:
           animation-duration:
             name: Animation Duration
             datatype: integer
-      player-manager:
-        name: Player Management
-        type: controller
-        properties:
-          player-count:
-            name: Number of Players
-            datatype: integer
-          last-join:
-            name: Last Join Timestamp
-            datatype: datetime
+      # player-manager:
+      #   name: Player Management
+      #   type: controller
+      #   properties:
+      #     player-count:
+      #       name: Number of Players
+      #       datatype: integer
+      #     last-join:
+      #       name: Last Join Timestamp
+      #       datatype: datetime
       team:
         name: Team Information
         type: controller
         properties:
+          name:
+            name: Team Name
+            datatype: string
           score:
             name: Team Score
             datatype: integer
@@ -177,7 +183,7 @@ devices:
     state: ready
     nodes:
       vote:
-        name: Voting System
+        name: Voting Node
         type: controller
         properties:
           value:
@@ -193,15 +199,15 @@ devices:
         name: Terminal Information
         type: sensor
         properties:
-          terminal-id:
-            name: Terminal ID
-            datatype: string
-          serial-number:
-            name: Serial Number
-            datatype: string
-          heartbeat:
-            name: Heartbeat
-            datatype: integer
+          # terminal-id:
+          #   name: Terminal ID
+          #   datatype: string
+          # serial-number:
+          #   name: Serial Number
+          #   datatype: string
+          # heartbeat:
+          #   name: Heartbeat
+          #   datatype: integer
           command:
             name: Command
             datatype: string
@@ -231,19 +237,19 @@ devices:
           last:
             name: Last Press
             datatype: datetime
-      button-a-b:
-        name: Button A+B
-        type: sensor
-        properties:
-          pressed:
-            name: Is Pressed
-            datatype: boolean
-          count:
-            name: Press Count
-            datatype: integer
-          last:
-            name: Last Press
-            datatype: datetime
+      # button-a-b:
+      #   name: Button A+B
+      #   type: sensor
+      #   properties:
+      #     pressed:
+      #       name: Is Pressed
+      #       datatype: boolean
+      #     count:
+      #       name: Press Count
+      #       datatype: integer
+      #     last:
+      #       name: Last Press
+      #       datatype: datetime
       display:
         name: Terminal Display
         type: controller

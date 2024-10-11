@@ -26,3 +26,13 @@ In order to obtain the latest dev version of dependencies, you may need a Github
 * Copy the token immediately - you won't be able to see it again!
 
 You need to export your token as **NPM_AUTH_TOKEN**.
+
+
+# How to reset your broker's persistent data (Mosquitto)
+
+```bash
+sudo service mosquitto stop
+sudo rm /var/lib/mosquitto/mosquitto.db
+sudo service mosquitto start
+```
+
