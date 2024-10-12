@@ -7,11 +7,24 @@ const client = mqtt.connect(brokerUrl);
 
 const skins = ['alienA', 'alienB', 'animalA', 'animalB', 'alienA', 'alienB', 'animalA', 'animalB'];
 const nicknames = ['Joe', 'Jenny', 'Jim', 'Jeremy', 'Kelly', 'Kyle', 'Kirstin', 'Kalua'];
+const terminalIds = [
+  'fdb51be9acccbaac',
+  '547b2ad2e9dc5ab9', // blue
+  'f2c96411dbad4acc',
+  'cfe6b123f9022a9a',
+
+
+  '2393bc7881829fbc', //yellow
+  '1ddde4169ebcd5bd',
+  'af24e71c31acf07a',
+  '00c7cbf325933992' // red
+]
 
 function createPlayer(index) {
   const playerId = `player-${index}`;
   const nickname = nicknames[index];
   const skin = skins[index];
+  const terminalId = terminalIds[index];
 
   const baseTopic = `homie/gateway/${playerId}`;
 
@@ -29,6 +42,7 @@ function createPlayer(index) {
   // Property definitions
   const propertyDefinitions = {
     'team-id': { name: 'Player Team ID', datatype: 'string' },
+    'terminal-id': { name: 'Player Terminal ID', datatype: 'string' },
     'active': { name: 'Active Status', datatype: 'boolean' },
     'nickname': { name: 'Player Nickname', datatype: 'string' },
     'skin': { name: 'Player Skin', datatype: 'string' },
@@ -49,6 +63,7 @@ function createPlayer(index) {
   // Property values
   const properties = {
     'team-id': 'team-'+Math.floor((index/4)+1),
+    'terminal-id': terminalId,
     'active': 'true',
     'nickname': nickname,
     'skin': skin,
