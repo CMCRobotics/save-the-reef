@@ -2,10 +2,10 @@ import { HomieDevice, HomieNode, HomieProperty, createMqttHomieObserver } from '
 
 
 /**
- * The Gateway controls a radio bridge Microbit and multiple wireless Microbit terminals, 
+ * The BridgeProxy controls a radio bridge Microbit and multiple wireless Microbit terminals, 
  * using the WebUSB serial port as a communication medium.
  */
-class Gateway {
+class SerialBridgeProxy {
   constructor(homieObserver) {
     this.homieObserver = homieObserver;
     this.terminals = new Map();
@@ -239,14 +239,14 @@ class Gateway {
   }
 }
 
-async function initializeGateway(mqttUrl) {
+async function initialize(mqttUrl) {
     const homieObserver = createMqttHomieObserver(mqttUrl);
 
     homieObserver.subscribe("homie/terminal-+/#");
 
-    const gateway = new Gateway(homieObserver);
+    const bridgeProxy = new SerialBridgeProxy(homieObserver);
 
-    return gateway;
+    return bridgeProxy;
 }
 
-export {initializeGateway, Gateway};
+export {initialize, SerialBridgeProxy};
