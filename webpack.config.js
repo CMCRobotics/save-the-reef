@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
   entry: {
     aframe: './src/aframe-scene.js',
-    quizz: './src/quizz-scene.js',
+    tutorial: './src/tutorial-scene.js',
     presentation: './src/reveal-presentation.js',
     voteAggregator: './src/vote-aggregator.js'
   },
