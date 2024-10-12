@@ -21,7 +21,7 @@ window.Buffer = Buffer;
 AFRAME.registerComponent('scene-controller', {
   init: function() {
     // TODO: Replace with actual MQTT broker
-    this.controller = new TutorialSceneController('ws://localhost:9001', "team-1");
+    this.controller = new TutorialSceneController('ws://localhost:9001', "teams");
     
     console.log("Hello shiny happy people");
   }
