@@ -8,6 +8,8 @@ class PlayerNode {
     this.deviceId = deviceId;
     this.nodeId = nodeId;
     this.properties = properties;
+    this.currentSkinIndex = 0;
+    this.currentAnimationIndex = 0;
   }
 }
 
@@ -20,15 +22,38 @@ class PropertyUpdate {
   }
 }
 
+class GameState {
+  constructor() {
+    this.currentMode = 'animation';
+  }
+}
+
 class TutorialSceneController {
   constructor(brokerUrl, parentElementId, mqttOptions = {}) {
     this.setupLogging();
     this.homieObserver = createMqttHomieObserver(brokerUrl, mqttOptions);
-    this.homieObserver.subscribe("gateway/#");
+    this.homieObserver.subscribe("#");
     this.parentElement = document.getElementById(parentElementId);
     this.players = new Map();
+    this.terminalToPlayerMap = new Map();
+    this.gameState = new GameState();
 
-    // Create a new HomiePropertyBuffer with a 500ms buffer time
+    this.SKINS = [
+      "alienA","alienB","animalA","animalB","animalBaseA","animalBaseB","animalBaseC","animalBaseD","animalBaseE","animalBaseF"
+      ,"animalBaseG","animalBaseH","animalBaseI","animalBaseJ","animalC","animalD","animalE","animalF","animalG","animalH","animalI"
+      ,"animalJ","astroFemaleA","astroFemaleB","astroMaleA","astroMaleB"
+      ,"athleteFemaleBlue","athleteFemaleGreen","athleteFemaleRed","athleteFemaleYellow","athleteMaleBlue","athleteMaleGreen"
+      ,"athleteMaleRed","athleteMaleYellow"
+      ,"businessMaleA","businessMaleB"
+      ,"casualFemaleA","casualFemaleB","casualMaleA","casualMaleB","cyborg"
+      ,"fantasyFemaleA","fantasyFemaleB","fantasyMaleA","fantasyMaleB","farmerA","farmerB"
+      ,"militaryFemaleA","militaryFemaleB","militaryMaleA","militaryMaleB"
+      ,"racerBlueFemale","racerBlueMale","racerGreenFemale","racerGreenMale","racerOrangeFemale","racerOrangeMale"
+      ,"racerPurpleFemale","racerPurpleMale","racerRedFemale","racerRedMale","robot","robot2","robot3"
+      ,"survivorFemaleA","survivorFemaleB","survivorMaleA","survivorMaleB","zombieA","zombieB","zombieC"
+  ];
+    this.ANIMATIONS = ['Idle', 'Walk', 'Run', 'CrouchWalk'];
+
     this.propertyBuffer = new HomiePropertyBuffer(this.homieObserver, 500);
 
     this.initNoolsFlow();
@@ -51,31 +76,52 @@ class TutorialSceneController {
           handlePropertyUpdate(update);
         }
       }
+
+      rule ProcessStateMachineUpdate {
+        when {
+          update: PropertyUpdate update.deviceId == 'gateway' && 
+                                   update.nodeId == 'state-machine' && 
+                                   update.propertyId == 'current-state'
+        }
+        then {
+          handleStateMachineUpdate(update);
+        }
+      }
+
+      rule ProcessButtonPress {
+        when {
+          update: PropertyUpdate update.deviceId.startsWith('terminal-') && 
+                                   update.nodeId == 'button-a' && 
+                                   update.propertyId == 'state' &&
+                                   update.value == 'pressed'
+        }
+        then {
+          handleButtonPress(update);
+        }
+      }
     `;
 
-    var that = this;
     this.flow = nools.compile(flowDef, {
       name: "tutorialScene",
       define: {
         PropertyUpdate: PropertyUpdate,
-        PlayerNode: PlayerNode
+        PlayerNode: PlayerNode,
+        GameState: GameState
       },
       scope: {
-        handlePropertyUpdate: that.handlePropertyUpdate.bind(that)
+        handlePropertyUpdate: this.handlePropertyUpdate.bind(this),
+        handleStateMachineUpdate: this.handleStateMachineUpdate.bind(this),
+        handleButtonPress: this.handleButtonPress.bind(this)
       }
     });
 
-    this.session = this.flow.getSession();
+    this.session = this.flow.getSession(this.gameState);
   }
 
   setupObservers() {
     this.propertyBuffer.getBufferedUpdates().subscribe(updates => {
-      const filteredUpdates = updates.filter(update => 
-        update.deviceId === 'gateway' && 
-        update.nodeId.startsWith('player-') && 
-        ['team-id', 'nickname', 'skin', 'scale', 'say', 'active', 'animation-mixer', 'animation-start', 'animation-duration'].includes(update.propertyId)
-      );
-
+      const filteredUpdates = updates.filter(update => !this.isMetaProperty(update.propertyId));
+      
       filteredUpdates.forEach(update => {
         this.session.assert(new PropertyUpdate(update.deviceId, update.nodeId, update.propertyId, update.value));
       });
@@ -86,7 +132,15 @@ class TutorialSceneController {
     });
   }
 
+  isMetaProperty(propertyId) {
+    return propertyId.startsWith('$');
+  }
+
   handlePropertyUpdate(update) {
+    if (this.isMetaProperty(update.propertyId)) {
+      return; // Ignore meta properties
+    }
+
     let player = this.players.get(update.nodeId);
     
     if (!player) {
@@ -98,37 +152,84 @@ class TutorialSceneController {
 
     log.info(`Updating player property: ${update.nodeId}/${update.propertyId} = ${update.value}`);
 
-    if (update.propertyId === 'active' || update.propertyId === 'team-id' || !player.properties['active']) {
-      this.renderPlayers();
-    } else if (update.propertyId === 'animation-mixer' || update.propertyId === 'animation-start' || update.propertyId === 'animation-duration') {
-      this.updatePlayerAnimation(player);
-    } else if (update.propertyId === 'skin' ) {
-      this.updatePlayerSkin(player);
+    if (update.propertyId === 'terminal-id') {
+      this.updateTerminalToPlayerMap(player, update.value);
     }
 
+    if (update.propertyId === 'active' || update.propertyId === 'team-id' || !player.properties['active']) {
+      this.renderPlayers();
+    } else if (update.propertyId === 'animation-mixer') {
+      this.updatePlayerAnimation(player);
+    } else if (update.propertyId === 'skin') {
+      this.updatePlayerSkin(player);
+    }
+  }
+
+  updateTerminalToPlayerMap(player, terminalId) {
+    // Remove old mapping if exists
+    for (let [key, value] of this.terminalToPlayerMap) {
+      if (value === player.nodeId) {
+        this.terminalToPlayerMap.delete(key);
+        break;
+      }
+    }
+    // Add new mapping
+    this.terminalToPlayerMap.set(terminalId, player.nodeId);
+    log.info(`Updated terminal-to-player mapping: Terminal ${terminalId} -> Player ${player.nodeId}`);
+  }
+
+  handleStateMachineUpdate(update) {
+    if (update.value === 'skin' || update.value === 'animation') {
+      this.gameState.currentMode = update.value;
+      log.info(`Game mode changed to: ${this.gameState.currentMode}`);
+    }
+  }
+
+  handleButtonPress(update) {
+    const terminalId = update.deviceId.split('-')[1];
+    const playerNodeId = this.terminalToPlayerMap.get(terminalId);
+    const player = playerNodeId ? this.players.get(playerNodeId) : null;
+
+    if (player) {
+      if (this.gameState.currentMode === 'skin') {
+        this.cycleSkin(player);
+      } else if (this.gameState.currentMode === 'animation') {
+        this.cycleAnimation(player);
+      }
+    } else {
+      log.warn(`Button press on terminal ${terminalId} doesn't map to any player`);
+    }
+  }
+
+  cycleSkin(player) {
+    player.currentSkinIndex = (player.currentSkinIndex + 1) % this.SKINS.length;
+    const newSkin = this.SKINS[player.currentSkinIndex];
+    player.properties.skin = newSkin;
+    this.updatePlayerSkin(player);
+    log.info(`Cycled skin for player ${player.nodeId}: ${newSkin}`);
+  }
+
+  cycleAnimation(player) {
+    player.currentAnimationIndex = (player.currentAnimationIndex + 1) % this.ANIMATIONS.length;
+    const newAnimation = this.ANIMATIONS[player.currentAnimationIndex];
+    player.properties['animation-mixer'] = `clip: ${newAnimation}; loop: repeat`;
+    this.updatePlayerAnimation(player);
+    log.info(`Cycled animation for player ${player.nodeId}: ${newAnimation}`);
   }
 
   updatePlayerAnimation(player) {
-    const animationMixer = player.properties['animation-mixer'];
-    const animationStart = parseInt(player.properties['animation-start']);
-    const animationDuration = parseInt(player.properties['animation-duration']);
-
-    if (animationMixer && (animationDuration === -1 || animationStart + animationDuration * 1000 > Date.now())) {
-      const playerEntity = this.parentElement.querySelector(`#${player.nodeId}`);
-      if (playerEntity) {
-        playerEntity.setAttribute('animation-mixer', animationMixer);
-        log.info(`Updated animation for player ${player.nodeId}: ${animationMixer}`);
-      }
+    const playerEntity = this.parentElement.querySelector(`#${player.nodeId}`);
+    if (playerEntity) {
+      playerEntity.setAttribute('animation-mixer', player.properties['animation-mixer']);
+      log.info(`Updated animation for player ${player.nodeId}: ${player.properties['animation-mixer']}`);
     }
   }
 
   updatePlayerSkin(player) {
-    const skin = player.properties['skin'];
-    
     const playerEntity = this.parentElement.querySelector(`#${player.nodeId}`);
     if (playerEntity) {
-      playerEntity.setAttribute('texture-map', `src: assets/players/skins/${skin || 'alienA'}.png`);
-      log.info(`Updated skin for player ${player.nodeId}: ${skin}`);
+      playerEntity.setAttribute('texture-map', `src: assets/players/skins/${player.properties.skin}.png`);
+      log.info(`Updated skin for player ${player.nodeId}: ${player.properties.skin}`);
     }
   }
 
