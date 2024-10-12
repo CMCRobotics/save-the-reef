@@ -8,7 +8,7 @@
         "build": "webpack --mode production"
     },
     "bin": {
-        "create-test-players": "./src/utils/create-test-players.js"
+        "create-test-players": "./src/bin/create-test-players.js"
     },
     "dependencies": {
         "@cmcrobotics/homie-lit": "^0.7.3",
