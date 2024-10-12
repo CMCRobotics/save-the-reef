@@ -37,7 +37,7 @@ class TutorialSceneController {
     this.players = new Map();
     this.terminalToPlayerMap = new Map();
     this.gameState = new GameState();
-
+    
     this.SKINS = [
       "alienA","alienB","animalA","animalB","animalBaseA","animalBaseB","animalBaseC","animalBaseD","animalBaseE","animalBaseF"
       ,"animalBaseG","animalBaseH","animalBaseI","animalBaseJ","animalC","animalD","animalE","animalF","animalG","animalH","animalI"
@@ -92,7 +92,7 @@ class TutorialSceneController {
       rule ProcessButtonPress {
         when {
           update: PropertyUpdate update.deviceId.startsWith('terminal-') && 
-                                   update.nodeId == 'button-a' && 
+                                   (update.nodeId == 'button-a' || update.nodeId == 'button-b') && 
                                    update.propertyId == 'state' &&
                                    update.value == 'pressed'
         }
@@ -194,27 +194,27 @@ class TutorialSceneController {
 
     if (player) {
       if (this.gameState.currentMode === 'skin') {
-        this.cycleSkin(player);
+        this.cycleSkin(player, (update.nodeId === 'button-a'? 1 : -1) );
       } else if (this.gameState.currentMode === 'animation') {
-        this.cycleAnimation(player);
+        this.cycleAnimation(player,  (update.nodeId === 'button-a'? 1 : -1));
       }
     } else {
       log.warn(`Button press on terminal ${terminalId} doesn't map to any player`);
     }
   }
 
-  cycleSkin(player) {
+  cycleSkin(player, direction) {
     const currentIndex = this.SKINS.indexOf(player.properties.skin);
-    const newIndex = (currentIndex + 1) % this.SKINS.length;
+    const newIndex = Math.max(0,(currentIndex + direction) % this.SKINS.length);
     const newSkin = this.SKINS[newIndex];
     this.updatePlayerProperty(player.nodeId, 'skin', newSkin);
   }
 
-  cycleAnimation(player) {
+  cycleAnimation(player, direction) {
     const currentAnimationMixer = player.properties['animation-mixer'] || 'clip: Idle; loop: repeat';
     const currentAnimation = currentAnimationMixer.split(';')[0].split(':')[1].trim();
     const currentIndex = this.ANIMATIONS.indexOf(currentAnimation);
-    const newIndex = (currentIndex + 1) % this.ANIMATIONS.length;
+    const newIndex = Math.max(0,(currentIndex + direction) % this.ANIMATIONS.length);
     const newAnimation = this.ANIMATIONS[newIndex];
     const newAnimationMixer = `clip: ${newAnimation}; loop: repeat`;
     this.updatePlayerProperty(player.nodeId, 'animation-mixer', newAnimationMixer);
@@ -230,7 +230,7 @@ class TutorialSceneController {
     const playerEntity = this.parentElement.querySelector(`#${player.nodeId}`);
     if (playerEntity) {
       playerEntity.setAttribute('animation-mixer', player.properties['animation-mixer']);
-      log.info(`Updated animation for player ${player.nodeId}: ${player.properties['animation-mixer']}`);
+      log.debug(`Updated animation for player ${player.nodeId}: ${player.properties['animation-mixer']}`);
     }
   }
 
@@ -238,7 +238,7 @@ class TutorialSceneController {
     const playerEntity = this.parentElement.querySelector(`#${player.nodeId}`);
     if (playerEntity) {
       playerEntity.setAttribute('texture-map', `src: assets/players/skins/${player.properties.skin}.png`);
-      log.info(`Updated skin for player ${player.nodeId}: ${player.properties.skin}`);
+      log.debug(`Updated skin for player ${player.nodeId}: ${player.properties.skin}`);
     }
   }
 
