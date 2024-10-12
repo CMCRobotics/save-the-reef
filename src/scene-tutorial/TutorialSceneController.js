@@ -151,7 +151,7 @@ class TutorialSceneController {
 
     player.properties[update.propertyId] = update.value;
 
-    log.info(`Updating player property: ${update.nodeId}/${update.propertyId} = ${update.value}`);
+    log.debug(`Updating player property: ${update.nodeId}/${update.propertyId} = ${update.value}`);
 
     if (update.propertyId === 'terminal-id') {
       this.updateTerminalToPlayerMap(player, update.value);
@@ -176,7 +176,7 @@ class TutorialSceneController {
     }
     // Add new mapping
     this.terminalToPlayerMap.set(terminalId, player.nodeId);
-    log.info(`Updated terminal-to-player mapping: Terminal ${terminalId} -> Player ${player.nodeId}`);
+    log.debug(`Updated terminal-to-player mapping: Terminal ${terminalId} -> Player ${player.nodeId}`);
   }
 
   handleStateMachineUpdate(update) {
