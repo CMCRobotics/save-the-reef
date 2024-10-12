@@ -28,7 +28,7 @@ class TutorialSceneController {
     this.parentElement = document.getElementById(parentElementId);
     this.players = new Map();
 
-    // Create a new HomiePropertyBuffer with a 100ms buffer time
+    // Create a new HomiePropertyBuffer with a 500ms buffer time
     this.propertyBuffer = new HomiePropertyBuffer(this.homieObserver, 500);
 
     this.initNoolsFlow();
@@ -73,7 +73,7 @@ class TutorialSceneController {
       const filteredUpdates = updates.filter(update => 
         update.deviceId === 'gateway' && 
         update.nodeId.startsWith('player-') && 
-        ['team-id', 'nickname', 'skin', 'scale', 'say', 'active'].includes(update.propertyId)
+        ['team-id', 'nickname', 'skin', 'scale', 'say', 'active', 'animation-mixer', 'animation-start', 'animation-duration'].includes(update.propertyId)
       );
 
       filteredUpdates.forEach(update => {
@@ -100,6 +100,35 @@ class TutorialSceneController {
 
     if (update.propertyId === 'active' || update.propertyId === 'team-id' || !player.properties['active']) {
       this.renderPlayers();
+    } else if (update.propertyId === 'animation-mixer' || update.propertyId === 'animation-start' || update.propertyId === 'animation-duration') {
+      this.updatePlayerAnimation(player);
+    } else if (update.propertyId === 'skin' ) {
+      this.updatePlayerSkin(player);
+    }
+
+  }
+
+  updatePlayerAnimation(player) {
+    const animationMixer = player.properties['animation-mixer'];
+    const animationStart = parseInt(player.properties['animation-start']);
+    const animationDuration = parseInt(player.properties['animation-duration']);
+
+    if (animationMixer && (animationDuration === -1 || animationStart + animationDuration * 1000 > Date.now())) {
+      const playerEntity = this.parentElement.querySelector(`#${player.nodeId}`);
+      if (playerEntity) {
+        playerEntity.setAttribute('animation-mixer', animationMixer);
+        log.info(`Updated animation for player ${player.nodeId}: ${animationMixer}`);
+      }
+    }
+  }
+
+  updatePlayerSkin(player) {
+    const skin = player.properties['skin'];
+    
+    const playerEntity = this.parentElement.querySelector(`#${player.nodeId}`);
+    if (playerEntity) {
+      playerEntity.setAttribute('texture-map', `src: assets/players/skins/${skin || 'alienA'}.png`);
+      log.info(`Updated skin for player ${player.nodeId}: ${skin}`);
     }
   }
 
@@ -114,7 +143,7 @@ class TutorialSceneController {
   renderPlayers() {
     const playerTemplate = (player) => html`
       <a-entity class="arc-item" look-towards="#camera" 
-      animation-mixer="clip: Idle; loop:repeat" 
+      animation-mixer="${player.properties['animation-mixer'] || 'clip: Idle; loop:repeat'}" 
       id="${player.nodeId}" 
       gltf-model="#player-model"
       texture-map="src: assets/players/skins/${player.properties.skin || 'alienA'}.png"
