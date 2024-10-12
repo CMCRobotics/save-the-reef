@@ -5,7 +5,20 @@ const mqtt = require('mqtt');
 const brokerUrl = 'mqtt://localhost:1883'; // Change this to your MQTT broker URL
 const client = mqtt.connect(brokerUrl);
 
-const skins = ['alienA', 'alienB', 'animalA', 'animalB', 'alienA', 'alienB', 'animalA', 'animalB'];
+const skins = [
+  "alienA","alienB","animalA","animalB","animalBaseA","animalBaseB","animalBaseC","animalBaseD","animalBaseE","animalBaseF"
+  ,"animalBaseG","animalBaseH","animalBaseI","animalBaseJ","animalC","animalD","animalE","animalF","animalG","animalH","animalI"
+  ,"animalJ","astroFemaleA","astroFemaleB","astroMaleA","astroMaleB"
+  ,"athleteFemaleBlue","athleteFemaleGreen","athleteFemaleRed","athleteFemaleYellow","athleteMaleBlue","athleteMaleGreen"
+  ,"athleteMaleRed","athleteMaleYellow"
+  ,"businessMaleA","businessMaleB"
+  ,"casualFemaleA","casualFemaleB","casualMaleA","casualMaleB","cyborg"
+  ,"fantasyFemaleA","fantasyFemaleB","fantasyMaleA","fantasyMaleB","farmerA","farmerB"
+  ,"militaryFemaleA","militaryFemaleB","militaryMaleA","militaryMaleB"
+  ,"racerBlueFemale","racerBlueMale","racerGreenFemale","racerGreenMale","racerOrangeFemale","racerOrangeMale"
+  ,"racerPurpleFemale","racerPurpleMale","racerRedFemale","racerRedMale","robot","robot2","robot3"
+  ,"survivorFemaleA","survivorFemaleB","survivorMaleA","survivorMaleB","zombieA","zombieB","zombieC"
+];
 const nicknames = ['Joe', 'Jenny', 'Jim', 'Jeremy', 'Kelly', 'Kyle', 'Kirstin', 'Kalua'];
 const terminalIds = [
   'fdb51be9acccbaac',
@@ -23,7 +36,7 @@ const terminalIds = [
 function createPlayer(index) {
   const playerId = `player-${index}`;
   const nickname = nicknames[index];
-  const skin = skins[index];
+  const skin = skins[Math.floor(Math.random() * skins.length)]; // pick a random skin
   const terminalId = terminalIds[index];
 
   const baseTopic = `homie/gateway/${playerId}`;
