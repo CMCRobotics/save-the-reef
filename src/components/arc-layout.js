@@ -35,10 +35,7 @@ AFRAME.registerComponent('arc-layout', {
         const x = data.radius * Math.cos(angle);
         const z = -data.radius * Math.sin(angle);  // Negative to place items in front
   
-        item.setAttribute('position', `${x.toFixed(2)} 0 ${z.toFixed(2)}`);
-  
-        // Make items face the center
-        item.setAttribute('look-at', '0 0 0');
+        item.setAttribute('position', `${x.toFixed(2)} 0 ${z.toFixed(2)}`); 
       });
     }
   });
