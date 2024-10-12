@@ -33,7 +33,7 @@ function createPlayer(index) {
     'active': { name: 'Active Status', datatype: 'boolean' },
     'nickname': { name: 'Player Nickname', datatype: 'string' },
     'skin': { name: 'Player Skin', datatype: 'string' },
-    'animation': { name: 'Current Animation', datatype: 'string' },
+    'animation-mixer': { name: 'Animation Mixer', datatype: 'string' },
     'animation-start': { name: 'Animation Start Time', datatype: 'string' },
     'animation-duration': { name: 'Animation Duration', datatype: 'integer', unit: 'seconds' }
   };
@@ -53,7 +53,7 @@ function createPlayer(index) {
     'active': 'true',
     'nickname': nickname,
     'skin': skin,
-    'animation': 'idle',
+    'animation-mixer': 'clip: idle; loop:repeat',
     'animation-start': new Date().toISOString(),
     'animation-duration': '5'
   };

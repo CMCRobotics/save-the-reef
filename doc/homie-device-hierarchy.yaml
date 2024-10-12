@@ -145,9 +145,10 @@ devices:
           # action-duration:
           #   name: Action Duration
           #   datatype: duration
-          animation:
-            name: Animation
+          animation-mixer:
+            name: Animation Mixer
             datatype: string
+            comment: Holds multiple properties directly related to aframe-extras animation mixer as a string
           animation-start:
             name: Animation Start
             datatype: datetime
