@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const mqtt = require('mqtt');
-const { v4: uuidv4 } = require('uuid');
 
 const brokerUrl = 'mqtt://localhost:1883'; // Change this to your MQTT broker URL
 const client = mqtt.connect(brokerUrl);
@@ -10,7 +9,7 @@ const skins = ['alienA', 'alienB', 'animalA', 'animalB', 'alienA', 'alienB', 'an
 const nicknames = ['Joe', 'Jenny', 'Jim', 'Jeremy', 'Kelly', 'Kyle', 'Kirstin', 'Kalua'];
 
 function createPlayer(index) {
-  const playerId = `player-${uuidv4()}`;
+  const playerId = `player-${index}`;
   const nickname = nicknames[index];
   const skin = skins[index];
 
@@ -53,9 +52,9 @@ function createPlayer(index) {
     'active': 'true',
     'nickname': nickname,
     'skin': skin,
-    'animation-mixer': 'clip: idle; loop:repeat',
+    'animation-mixer': 'clip: Idle; loop:repeat',
     'animation-start': new Date().toISOString(),
-    'animation-duration': '5'
+    'animation-duration': '-1'
   };
 
   Object.entries(properties).forEach(([key, value]) => {
