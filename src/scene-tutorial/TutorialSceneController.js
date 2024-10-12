@@ -33,6 +33,7 @@ class TutorialSceneController {
 
     this.initNoolsFlow();
     this.setupObservers();
+    this.createTeamLayouts();
   }
 
   setupLogging() {
@@ -97,9 +98,17 @@ class TutorialSceneController {
 
     log.info(`Updating player property: ${update.nodeId}/${update.propertyId} = ${update.value}`);
 
-    if (update.propertyId === 'active' || !player.properties['active']) {
+    if (update.propertyId === 'active' || update.propertyId === 'team-id' || !player.properties['active']) {
       this.renderPlayers();
     }
+  }
+
+  createTeamLayouts() {
+    const teamLayouts = html`
+      <a-entity id="team-1" position="-9.5 0 0" rotation="0 90 0" arc-layout="radius: 10; startAngle: -40; endAngle: 40; itemSelector: .arc-item"></a-entity>
+      <a-entity id="team-2" position="9.5 0 0" rotation="0 90 0" arc-layout="radius: 10; startAngle: -40; endAngle: 40; itemSelector: .arc-item"></a-entity>
+    `;
+    render(teamLayouts, this.parentElement);
   }
 
   renderPlayers() {
@@ -118,14 +127,31 @@ class TutorialSceneController {
       </a-entity>
     `;
 
-    const playersTemplate = html`
-      ${Array.from(this.players.values())
-        .filter(player => player.properties.active === 'true')
-        .map(player => playerTemplate(player))}
+    const team1Players = Array.from(this.players.values())
+      .filter(player => player.properties.active === 'true' && player.properties['team-id'] === 'team-1');
+    
+    const team2Players = Array.from(this.players.values())
+      .filter(player => player.properties.active === 'true' && player.properties['team-id'] === 'team-2');
+
+    const team1Template = html`
+      ${team1Players.map(player => playerTemplate(player))}
     `;
-    render(playersTemplate, this.parentElement);
-    if (this.parentElement.components['arc-layout']) {
-      this.parentElement.components['arc-layout'].update();
+
+    const team2Template = html`
+      ${team2Players.map(player => playerTemplate(player))}
+    `;
+
+    const team1Element = this.parentElement.querySelector('#team-1');
+    const team2Element = this.parentElement.querySelector('#team-2');
+
+    if (team1Element) {
+      render(team1Template, team1Element);
+      team1Element.components['arc-layout'].update();
+    }
+
+    if (team2Element) {
+      render(team2Template, team2Element);
+      team2Element.components['arc-layout'].update();
     }
   }
 }
