@@ -6,7 +6,15 @@ AFRAME.registerComponent('texture-map', {
       roughness: { type: 'float', default: 0.85}
     },
 
-    init() {
+    init: function() {
+      this.applyTexture();
+    },
+  
+    update: function() {
+      this.applyTexture();
+    },
+
+    applyTexture: function() {
       const { src, roughness } = this.data;
       const el = this.el;
       const loader = new TextureLoader();
