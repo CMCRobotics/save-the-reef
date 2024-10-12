@@ -25,9 +25,11 @@ class TutorialSceneController {
     this.setupLogging();
     this.homieObserver = createMqttHomieObserver(brokerUrl, mqttOptions);
     this.homieObserver.subscribe("gateway/#");
-    this.propertyBuffer = new HomiePropertyBuffer(this.homieObserver);
     this.parentElement = document.getElementById(parentElementId);
     this.players = new Map();
+
+    // Create a new HomiePropertyBuffer with a 100ms buffer time
+    this.propertyBuffer = new HomiePropertyBuffer(this.homieObserver, 500);
 
     this.initNoolsFlow();
     this.setupObservers();
@@ -40,12 +42,11 @@ class TutorialSceneController {
 
   initNoolsFlow() {
     const flowDef = `
-      rule CreateOrUpdatePlayer {
+      rule ProcessPlayerUpdate {
         when {
           update: PropertyUpdate update.deviceId == 'gateway' && update.nodeId.startsWith('player-')
         }
         then {
-          log.info("Updating player property: " + update.nodeId + "/" + update.propertyId + " = " + update.value);
           handlePropertyUpdate(update);
         }
       }
@@ -59,7 +60,6 @@ class TutorialSceneController {
         PlayerNode: PlayerNode
       },
       scope: {
-        log: log,
         handlePropertyUpdate: that.handlePropertyUpdate.bind(that)
       }
     });
@@ -68,42 +68,38 @@ class TutorialSceneController {
   }
 
   setupObservers() {
-    this.propertyBuffer.processBufferedUpdates((updates) => {
-      updates.forEach(update => {
-        if (update.deviceId === 'gateway' && update.nodeId.startsWith('player-') 
-           && ['nickname', 'skin', 'scale', 'say', 'active'].indexOf(update.propertyId) != -1 ) {
-          this.session.assert(new PropertyUpdate(update.deviceId, update.nodeId, update.propertyId, update.value));
-        }
+    this.propertyBuffer.getBufferedUpdates().subscribe(updates => {
+      const filteredUpdates = updates.filter(update => 
+        update.deviceId === 'gateway' && 
+        update.nodeId.startsWith('player-') && 
+        ['team-id', 'nickname', 'skin', 'scale', 'say', 'active'].includes(update.propertyId)
+      );
+
+      filteredUpdates.forEach(update => {
+        this.session.assert(new PropertyUpdate(update.deviceId, update.nodeId, update.propertyId, update.value));
       });
-      this.session.match();
+
+      if (filteredUpdates.length > 0) {
+        this.session.match();
+      }
     });
   }
 
-  handlePropertyUpdate(propertyUpdate) {
-    let player = this.players.get(propertyUpdate.nodeId);
+  handlePropertyUpdate(update) {
+    let player = this.players.get(update.nodeId);
     
     if (!player) {
-      player = new PlayerNode(propertyUpdate.deviceId, propertyUpdate.nodeId, {});
-      this.players.set(propertyUpdate.nodeId, player);
+      player = new PlayerNode(update.deviceId, update.nodeId, {});
+      this.players.set(update.nodeId, player);
     }
 
-    player.properties[propertyUpdate.propertyId] = propertyUpdate.value;
+    player.properties[update.propertyId] = update.value;
 
-    if (propertyUpdate.propertyId === 'active' && propertyUpdate.value === 'true') {
-      this.createPlayerEntity(player);
-    } else {
-      this.updatePlayerEntity(player);
+    log.info(`Updating player property: ${update.nodeId}/${update.propertyId} = ${update.value}`);
+
+    if (update.propertyId === 'active' || !player.properties['active']) {
+      this.renderPlayers();
     }
-  }
-
-  createPlayerEntity(player) {
-    log.info(`Creating player entity: ${player.nodeId}`);
-    this.renderPlayers();
-  }
-
-  updatePlayerEntity(player) {
-    log.info(`Updating player entity: ${player.nodeId}`);
-    this.renderPlayers();
   }
 
   renderPlayers() {
@@ -128,7 +124,9 @@ class TutorialSceneController {
         .map(player => playerTemplate(player))}
     `;
     render(playersTemplate, this.parentElement);
-    this.parentElement.components['arc-layout'].update();
+    if (this.parentElement.components['arc-layout']) {
+      this.parentElement.components['arc-layout'].update();
+    }
   }
 }
 
