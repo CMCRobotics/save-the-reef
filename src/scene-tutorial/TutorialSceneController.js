@@ -108,11 +108,17 @@ class TutorialSceneController {
 
   renderPlayers() {
     const playerTemplate = (player) => html`
-      <a-entity class="arc-item" look-towards="#camera" id="${player.nodeId}" gltf-model="#player-model" scale="${player.properties.scale || '1 1 1'}">
+      <a-entity class="arc-item" look-towards="#camera" 
+      animation-mixer="clip: Idle; loop:repeat" 
+      id="${player.nodeId}" 
+      gltf-model="#player-model"
+      texture-map="src: assets/players/skins/${player.properties.skin || 'alienA'}.png"
+       scale="${player.properties.scale || '1 1 1'}">
         <a-text
+          color="black"
+          opacity="0.8"
           value="${player.properties.nickname || '...'}"
-          material="color:white"
-          width="2.5" align="center" label="overwrite:true"></a-text>
+          width="1" align="center" position="0 0 2" label="overwrite:true"></a-text>
       </a-entity>
     `;
 
@@ -122,6 +128,7 @@ class TutorialSceneController {
         .map(player => playerTemplate(player))}
     `;
     render(playersTemplate, this.parentElement);
+    this.parentElement.components['arc-layout'].update();
   }
 }
 
