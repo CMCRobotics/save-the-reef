@@ -114,6 +114,13 @@ devices:
     name: Game Gateway
     state: ready
     nodes:
+      state-machine:
+        name: State Machine
+        type: state-machine
+        properties:
+          current-state:
+            name: Current State
+            datatype: string
       player-X:
         name: Player X
         type: controller
