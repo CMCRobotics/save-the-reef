@@ -6,8 +6,8 @@ const { v4: uuidv4 } = require('uuid');
 const brokerUrl = 'mqtt://localhost:1883'; // Change this to your MQTT broker URL
 const client = mqtt.connect(brokerUrl);
 
-const skins = ['alienA', 'alienB', 'animalA', 'animalB'];
-const nicknames = ['Joe', 'Sue', 'Mark', 'Albert'];
+const skins = ['alienA', 'alienB', 'animalA', 'animalB', 'alienA', 'alienB', 'animalA', 'animalB'];
+const nicknames = ['Joe', 'Jenny', 'Jim', 'Jeremy', 'Kelly', 'Kyle', 'Kirstin', 'Kalua'];
 
 function createPlayer(index) {
   const playerId = `player-${uuidv4()}`;
@@ -25,10 +25,11 @@ function createPlayer(index) {
   // Homie node properties
   client.publish(`${baseTopic}/$name`, 'Player Properties', { retain: true });
   client.publish(`${baseTopic}/$type`, 'player', { retain: true });
-  client.publish(`${baseTopic}/$properties`, 'active,nickname,skin,animation,animation-start,animation-duration', { retain: true });
+  
 
   // Property definitions
   const propertyDefinitions = {
+    'team-id': { name: 'Player Team ID', datatype: 'string' },
     'active': { name: 'Active Status', datatype: 'boolean' },
     'nickname': { name: 'Player Nickname', datatype: 'string' },
     'skin': { name: 'Player Skin', datatype: 'string' },
@@ -36,6 +37,7 @@ function createPlayer(index) {
     'animation-start': { name: 'Animation Start Time', datatype: 'string' },
     'animation-duration': { name: 'Animation Duration', datatype: 'integer', unit: 'seconds' }
   };
+  client.publish(`${baseTopic}/$properties`, Object.keys(propertyDefinitions).join(','), { retain: true });
 
   Object.entries(propertyDefinitions).forEach(([prop, def]) => {
     client.publish(`${baseTopic}/${prop}/$name`, def.name, { retain: true });
@@ -47,6 +49,7 @@ function createPlayer(index) {
 
   // Property values
   const properties = {
+    'team-id': 'team-'+Math.floor((index/4)+1),
     'active': 'true',
     'nickname': nickname,
     'skin': skin,
@@ -65,7 +68,7 @@ function createPlayer(index) {
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 8; i++) {
     createPlayer(i);
   }
 
