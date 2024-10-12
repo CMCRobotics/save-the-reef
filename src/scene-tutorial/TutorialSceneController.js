@@ -24,7 +24,7 @@ class PropertyUpdate {
 
 class GameState {
   constructor() {
-    this.currentMode = 'animation';
+    this.currentMode = 'skin';
   }
 }
 
@@ -59,6 +59,7 @@ class TutorialSceneController {
     this.initNoolsFlow();
     this.setupObservers();
     this.createTeamLayouts();
+    this.createModeToggle();
   }
 
   setupLogging() {
@@ -182,6 +183,7 @@ class TutorialSceneController {
     if (update.value === 'skin' || update.value === 'animation') {
       this.gameState.currentMode = update.value;
       log.info(`Game mode changed to: ${this.gameState.currentMode}`);
+      this.updateModeToggle();
     }
   }
 
@@ -202,19 +204,26 @@ class TutorialSceneController {
   }
 
   cycleSkin(player) {
-    player.currentSkinIndex = (player.currentSkinIndex + 1) % this.SKINS.length;
-    const newSkin = this.SKINS[player.currentSkinIndex];
-    player.properties.skin = newSkin;
-    this.updatePlayerSkin(player);
-    log.info(`Cycled skin for player ${player.nodeId}: ${newSkin}`);
+    const currentIndex = this.SKINS.indexOf(player.properties.skin);
+    const newIndex = (currentIndex + 1) % this.SKINS.length;
+    const newSkin = this.SKINS[newIndex];
+    this.updatePlayerProperty(player.nodeId, 'skin', newSkin);
   }
 
   cycleAnimation(player) {
-    player.currentAnimationIndex = (player.currentAnimationIndex + 1) % this.ANIMATIONS.length;
-    const newAnimation = this.ANIMATIONS[player.currentAnimationIndex];
-    player.properties['animation-mixer'] = `clip: ${newAnimation}; loop: repeat`;
-    this.updatePlayerAnimation(player);
-    log.info(`Cycled animation for player ${player.nodeId}: ${newAnimation}`);
+    const currentAnimationMixer = player.properties['animation-mixer'] || 'clip: Idle; loop: repeat';
+    const currentAnimation = currentAnimationMixer.split(';')[0].split(':')[1].trim();
+    const currentIndex = this.ANIMATIONS.indexOf(currentAnimation);
+    const newIndex = (currentIndex + 1) % this.ANIMATIONS.length;
+    const newAnimation = this.ANIMATIONS[newIndex];
+    const newAnimationMixer = `clip: ${newAnimation}; loop: repeat`;
+    this.updatePlayerProperty(player.nodeId, 'animation-mixer', newAnimationMixer);
+  }
+
+  updatePlayerProperty(playerNodeId, propertyId, value) {
+    const topic = `gateway/${playerNodeId}/${propertyId}`;
+    this.homieObserver.publish(topic, value);
+    log.info(`Published update for player ${playerNodeId}: ${propertyId} = ${value}`);
   }
 
   updatePlayerAnimation(player) {
@@ -231,6 +240,35 @@ class TutorialSceneController {
       playerEntity.setAttribute('texture-map', `src: assets/players/skins/${player.properties.skin}.png`);
       log.info(`Updated skin for player ${player.nodeId}: ${player.properties.skin}`);
     }
+  }
+
+  createModeToggle() {
+    const toggleButton = document.createElement('button');
+    toggleButton.id = 'mode-toggle';
+    toggleButton.style.position = 'absolute';
+    toggleButton.style.top = '10px';
+    toggleButton.style.left = '10px';
+    toggleButton.style.zIndex = '1000';
+    this.updateModeToggle(toggleButton);
+
+    toggleButton.addEventListener('click', () => {
+      const newMode = this.gameState.currentMode === 'skin' ? 'animation' : 'skin';
+      this.updateStateMachine(newMode);
+    });
+
+    document.body.appendChild(toggleButton);
+  }
+
+  updateModeToggle(button = document.getElementById('mode-toggle')) {
+    if (button) {
+      button.textContent = `Mode: ${this.gameState.currentMode}`;
+    }
+  }
+
+  updateStateMachine(newState) {
+    const topic = 'gateway/state-machine/current-state';
+    this.homieObserver.publish(topic, newState);
+    log.info(`Published state machine update: current-state = ${newState}`);
   }
 
   createTeamLayouts() {
