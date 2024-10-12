@@ -12,6 +12,7 @@ class Gateway {
     this.currentMode = 'VOTING';
     this.buffer = '';
     this.writer = null;
+    this.propagateReleasedButton = true;
     this.setupWebUSB();
   }
 
@@ -132,11 +133,13 @@ class Gateway {
     this.publishProperty(terminal.id, buttonNodeId, stateProperty);
     this.publishProperty(terminal.id, buttonNodeId, timestampProperty);
 
-    // Reset the button state after a short delay
-    setTimeout(() => {
-      stateProperty.setValue('released');
-      this.publishProperty(terminal.id, buttonNodeId, stateProperty);
-    }, 500);
+    if(this.propagateReleasedButton){
+      // Reset the button state after a short delay
+      setTimeout(() => {
+        stateProperty.setValue('released');
+        this.publishProperty(terminal.id, buttonNodeId, stateProperty);
+      }, 500);
+    }
   }
 
   createTerminalDevice(deviceId) {
