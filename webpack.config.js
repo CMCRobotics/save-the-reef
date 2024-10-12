@@ -6,6 +6,7 @@ module.exports = {
   entry: {
     aframe: './src/aframe-scene.js',
     tutorial: './src/tutorial-scene.js',
+    quizz: './src/quizz-scene.js',
     presentation: './src/reveal-presentation.js',
     voteAggregator: './src/vote-aggregator.js'
   },
