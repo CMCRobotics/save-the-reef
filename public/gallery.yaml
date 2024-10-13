@@ -1,0 +1,62 @@
+- assetId: acropora-cervicornis
+  commonName: Staghorn Coral
+  frenchName: Corail corne de cerf
+  latinName: Acropora cervicornis
+  position: [0, 3, -3]
+  scale: [30, 30, 30]
+
+- assetId: acropora-palmata
+  commonName: Elkhorn Coral
+  frenchName: Corail corne d'élan
+  latinName: Acropora palmata
+  position: [0, 0.1, -3]
+  scale: [8, 8, 8]
+
+- assetId: acropora-prolifera
+  commonName: Fused Staghorn Coral
+  frenchName: Corail corne de cerf prolifère
+  latinName: Acropora prolifera
+  position: [0, 0.5, -3]
+  scale: [30, 30, 30]
+
+- assetId: millepora-alcicornis
+  commonName: Fire Coral
+  frenchName: Corail de feu
+  latinName: Millepora alcicornis
+  position: [0, 2, -3]
+  scale: [20, 20, 20]
+
+- assetId: montastrea-cavernosa
+  commonName: Great Star Coral
+  frenchName: Corail etoile
+  latinName: Montastraea cavernosa
+  position: [0, 2, -3]
+  scale: [3, 3, 3]
+
+- assetId: dendrogyra-cylindricus
+  commonName: Pillar Coral
+  frenchName: Corail cierge
+  latinName: Dendrogyra cylindrus
+  position: [0, 0, -3]
+  scale: [10, 10, 10]
+
+- assetId: agaricia-speciosa   
+  commonName: Thin Leaf Lettuce Coral
+  frenchName: Corail laitue à feuilles minces
+  latinName: Agaricia speciosa
+  position: [0, 0.5, -3]
+  scale: [50, 50, 50]
+
+- assetId: eusmilia-fastigiata
+  commonName: Smooth Flower Coral
+  frenchName: Corail fleur lisse
+  latinName: Eusmilia fastigiata
+  position: [0, 0.5, -3]
+  scale: [3, 3, 3]
+
+- assetId: meandrina-meandrites
+  commonName: Maze Coral
+  frenchName: Corail cerveau méandriforme
+  latinName: Meandrina meandrites
+  position: [0, 0.5, -3]
+  scale: [25, 25, 25]

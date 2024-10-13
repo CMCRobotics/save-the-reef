@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coral Gallery</title>
+    <script  defer src="gallery.bundle.js"></script>
+    <style>
+        .button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 9999;
+            padding: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        #prevButton { left: 20px; }
+        #nextButton { right: 20px; }
+        #coralInfo {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <button id="prevButton" class="button">&lt;</button>
+    <button id="nextButton" class="button">&gt;</button>
+
+    <a-scene>
+        <a-assets>
+            <img id="sandTexture" src="assets/sand.jpg">
+            <img id="skybox" src="assets/skybox.png">
+            <a-asset-item id="coral-acropora-cervicornis"     src="assets/coral/acropora-cervicornis.glb"></a-asset-item>
+            <a-asset-item id="coral-acropora-prolifera"       src="assets/coral/acropora-prolifera.glb"></a-asset-item>
+            <a-asset-item id="coral-millepora-alcicornis"     src="assets/coral/millepora-alcicornis.glb"></a-asset-item>
+            <a-asset-item id="coral-montastrea-cavernosa"     src="assets/coral/montastrea-cavernosa.glb"></a-asset-item>
+            <a-asset-item id="coral-dendrogyra-cylindricus"   src="assets/coral/dendrogyra-cylindricus.glb"></a-asset-item>
+            <a-asset-item id="coral-agaricia-speciosa"        src="assets/coral/agaricia-speciosa.glb"></a-asset-item>
+            <a-asset-item id="coral-acropora-palmata"         src="assets/coral/acropora-palmata.glb"></a-asset-item>
+            <a-asset-item id="coral-eusmilia-fastigiata"      src="assets/coral/eusmilia-fastigiata.glb"></a-asset-item>
+            <a-asset-item id="coral-meandrina-meandrites"     src="assets/coral/meandrina-meandrites.glb"></a-asset-item>
+            <!-- <a-asset-item id="coral-pseudodiploria-strigosa"  src="assets/coral/pseudodiploria-strigosa.glb"></a-asset-item> -->
+            <!-- <a-asset-item id="coral-colpophyllia-natans"      src="assets/coral/colpophyllia-natans.glb"></a-asset-item> -->
+        </a-assets>
+
+        <a-sky src="#skybox"></a-sky>
+        <!-- Underwater floor with sand texture -->
+        <a-circle id="floor" position="0 0 -4" rotation="-90 0 0" radius="10" segments="80" 
+        material="src: #sandTexture; repeat: 5 5" shadow="receive: true"></a-circle>
+            
+
+        <!-- Stationary caustics effect using custom shader -->
+        <a-circle position="0 0.01 -4" rotation="-90 0 0" radius="10" segments="80" 
+        material="shader: stationary-caustics; color: #00aaff; transparent: true; blending: additive" shadow="receive: true"></a-circle>
+
+        <a-entity id="coralContainer"></a-entity>
+
+        <a-entity camera orbit-controls="zoomSpeed: 1.5; minDistance: 3; maxDistance: 9; initialPosition: 0 6 12; maxPolarAngle: 80; rotateSpeed: 2" position="0 1.6 0"></a-entity>
+    </a-scene>
+
+    
+</body>
+</html>
