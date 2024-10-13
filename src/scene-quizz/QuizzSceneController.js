@@ -4,7 +4,7 @@ import TeamLayout from '../homie-lit-components/TeamLayout';
 import { questionDisplayTemplate } from './questionDisplayTemplate';
 import * as nools from 'nools';
 import log from 'loglevel';
-import { render } from 'lit-html';
+import { html, render } from 'lit-html';
 
 class PlayerNode {
   constructor(deviceId, nodeId, properties) {
@@ -24,7 +24,9 @@ class QuizzSceneController {
     this.propertyBuffer = new HomiePropertyBuffer(this.homieObserver, 300);
     this.players = new Map();
     this.terminalToPlayerMap = new Map();
+    this.playerSayEntities = new Map();
     this.teamLayout = new TeamLayout(this.teamParentElement);
+    
 
     this.flow = this.initNoolsFlow();
     this.session = this.flow.getSession();
@@ -36,6 +38,8 @@ class QuizzSceneController {
     this.questionDisplayElement = document.createElement('a-entity');
     this.questionDisplayElement.setAttribute('id', 'questionDisplay');
     this.questionParentElement.appendChild(this.questionDisplayElement);
+
+    this.emoji = '🎁';
   }
 
   setupLogging() {
@@ -62,6 +66,16 @@ class QuizzSceneController {
           handleVoteUpdate(update);
         }
       }
+
+
+      rule ProcessTerminalVoteUpdate {
+        when {
+          update: PropertyUpdate update.deviceId.startsWith('terminal-') && update.nodeId === 'vote' && update.propertyId === 'option'
+        }
+        then {
+          handleTerminalVoteUpdate(update);
+        }
+      }
     `, {
       define: {
         PropertyUpdate: PropertyUpdate,
@@ -70,6 +84,7 @@ class QuizzSceneController {
       scope: {
         handlePropertyUpdate: this.handlePropertyUpdate.bind(this),
         handleVoteUpdate: this.handleVoteUpdate.bind(this),
+        handleTerminalVoteUpdate: this.handleTerminalVoteUpdate.bind(this),
         logger: console
       },
       name: "quizz"
@@ -143,6 +158,60 @@ class QuizzSceneController {
     }
 
     log.debug(`Updating vote property: ${update.deviceId}/${update.propertyId} = ${update.value}`);
+  }
+
+  handleTerminalVoteUpdate(update) {
+    const terminalId = update.deviceId.split('-')[1]; // remove the "terminal-" prefix
+    log.debug(`Received vote from terminal: ${terminalId}, option: ${update.value}`);
+    this.displayEmoji(terminalId);
+  }
+
+displayEmoji(terminalId) {
+    const playerNodeId = this.terminalToPlayerMap.get(terminalId);
+
+    if (playerNodeId) {
+      const playerEntity = this.teamParentElement.querySelector(`#${playerNodeId}`);
+      if (playerEntity) {
+        this.renderEmojiEntity(playerEntity, playerNodeId);
+      }
+    }
+  }
+
+  renderEmojiEntity(playerEntity, playerNodeId) {
+    const template = this.createEmojiTemplate(playerNodeId);
+    
+    let sayEntity = this.playerSayEntities.get(playerNodeId);
+    if (!sayEntity) {
+      sayEntity = document.createElement('a-entity');
+      sayEntity.setAttribute('id', `${playerNodeId}-say`);
+      playerEntity.appendChild(sayEntity);
+      this.playerSayEntities.set(playerNodeId, sayEntity);
+    }
+
+    render(template, sayEntity);
+    
+    // Make the entity visible
+    sayEntity.setAttribute('visible', 'true');
+    
+    // Hide the entity after 5 seconds
+    // setTimeout(() => {
+    //   sayEntity.setAttribute('visible', 'false');
+    // }, 5000);
+  }
+
+  createEmojiTemplate(playerNodeId) {
+    return html`
+      <a-entity
+        face-target="#camera"
+        scale="16 16 16"
+        position="0 4.8 0.5"
+        htmlembed
+      >
+        <div id="${playerNodeId}-bubble" style="background: #ffffff; border-radius: 20%; padding: 2px; text-align: center;">
+          <span>${this.emoji}</span>
+        </div>
+      </a-entity>
+    `;
   }
 
   updateQuestionDisplay() {

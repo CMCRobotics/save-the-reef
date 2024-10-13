@@ -5,6 +5,7 @@ import './components/caustics';
 import './components/arc-layout';
 import './components/texture-map';
 import './components/look-towards';
+import './components/face-target';
 
 import 'aframe-extras';
 import 'aframe-label';
