@@ -1,8 +1,10 @@
 import { createMqttHomieObserver, HomiePropertyBuffer, logger as homieLogger } from '@cmcrobotics/homie-lit';
 import PropertyUpdate from '../homie-lit-components/PropertyUpdate';
 import TeamLayout from '../homie-lit-components/TeamLayout';
+import { questionDisplayTemplate } from './questionDisplayTemplate';
 import * as nools from 'nools';
 import log from 'loglevel';
+import { render } from 'lit-html';
 
 class PlayerNode {
   constructor(deviceId, nodeId, properties) {
@@ -13,17 +15,16 @@ class PlayerNode {
 }
 
 class QuizzSceneController {
-  constructor(brokerUrl, parentElementId, mqttOptions = {}) {
+  constructor(brokerUrl, teamParentElementId, questionParentElementId, mqttOptions = {}) {
     this.setupLogging();
     this.homieObserver = createMqttHomieObserver(brokerUrl, mqttOptions);
-    // this.homieObserver.subscribe("gateway/#");
-    // this.homieObserver.subscribe("terminal-+/#");
     this.homieObserver.subscribe("#");
-    this.parentElement = document.getElementById(parentElementId);
+    this.teamParentElement = document.getElementById(teamParentElementId);
+    this.questionParentElement = document.getElementById(questionParentElementId);
     this.propertyBuffer = new HomiePropertyBuffer(this.homieObserver, 300);
     this.players = new Map();
     this.terminalToPlayerMap = new Map();
-    this.teamLayout = new TeamLayout(this.parentElement);
+    this.teamLayout = new TeamLayout(this.teamParentElement);
 
     this.flow = this.initNoolsFlow();
     this.session = this.flow.getSession();
@@ -31,6 +32,10 @@ class QuizzSceneController {
     this.setupObservers();
     this.teamLayout.createTeamLayouts();
     
+    this.currentVote = null;
+    this.questionDisplayElement = document.createElement('a-entity');
+    this.questionDisplayElement.setAttribute('id', 'questionDisplay');
+    this.questionParentElement.appendChild(this.questionDisplayElement);
   }
 
   setupLogging() {
@@ -48,13 +53,23 @@ class QuizzSceneController {
           handlePropertyUpdate(update);
         }
       }
-        `,{
-      define:{
-        PropertyUpdate : PropertyUpdate,
+
+      rule ProcessVoteUpdate {
+        when {
+          update: PropertyUpdate update.deviceId.startsWith('vote-')
+        }
+        then {
+          handleVoteUpdate(update);
+        }
+      }
+    `, {
+      define: {
+        PropertyUpdate: PropertyUpdate,
         PlayerNode: PlayerNode
       },
       scope: {
         handlePropertyUpdate: this.handlePropertyUpdate.bind(this),
+        handleVoteUpdate: this.handleVoteUpdate.bind(this),
         logger: console
       },
       name: "quizz"
@@ -83,7 +98,7 @@ class QuizzSceneController {
 
   handlePropertyUpdate(update) {
     if (this.isMetaProperty(update.propertyId)) {
-      return; // Ignore meta properties
+      return;
     }
 
     let player = this.players.get(update.nodeId);
@@ -108,7 +123,50 @@ class QuizzSceneController {
     } 
   }
 
+  handleVoteUpdate(update) {
+    if (this.isMetaProperty(update.propertyId)) {
+      return;
+    }
 
+    if (!this.currentVote || this.currentVote.deviceId !== update.deviceId) {
+      this.currentVote = { deviceId: update.deviceId, properties: {} };
+    }
+
+    this.currentVote.properties[update.propertyId] = update.value;
+
+    if (update.propertyId === 'question-statement' || 
+        update.propertyId === 'option-1' || 
+        update.propertyId === 'option-2' || 
+        update.propertyId === 'option-3' || 
+        update.propertyId === 'option-4') {
+      this.updateQuestionDisplay();
+    }
+
+    log.debug(`Updating vote property: ${update.deviceId}/${update.propertyId} = ${update.value}`);
+  }
+
+  updateQuestionDisplay() {
+    if (this.currentVote && 
+        this.currentVote.properties['question-statement'] && 
+        this.currentVote.properties['option-1'] &&
+        this.currentVote.properties['option-2'] &&
+        this.currentVote.properties['option-3'] &&
+        this.currentVote.properties['option-4']) {
+      
+      const question = this.currentVote.properties['question-statement'];
+      const options = [
+        this.currentVote.properties['option-1'],
+        this.currentVote.properties['option-2'],
+        this.currentVote.properties['option-3'],
+        this.currentVote.properties['option-4']
+      ];
+
+      render(questionDisplayTemplate(question, options), this.questionDisplayElement);
+
+      log.debug(`Updated question display: ${question}`);
+      log.debug(`Options: ${options.join(', ')}`);
+    }
+  }
 
   updatePlayerAnimation(player) {
     const playerEntity = this.parentElement.querySelector(`#${player.nodeId}`);
@@ -119,18 +177,15 @@ class QuizzSceneController {
   }
 
   updateTerminalToPlayerMap(player, terminalId) {
-    // Remove old mapping if exists
     for (let [key, value] of this.terminalToPlayerMap) {
       if (value === player.nodeId) {
         this.terminalToPlayerMap.delete(key);
         break;
       }
     }
-    // Add new mapping
     this.terminalToPlayerMap.set(terminalId, player.nodeId);
     log.debug(`Updated terminal-to-player mapping: Terminal ${terminalId} -> Player ${player.nodeId}`);
   }
-
 }
 
 export default QuizzSceneController;

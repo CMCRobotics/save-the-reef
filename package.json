@@ -8,19 +8,23 @@
         "build": "webpack --mode production"
     },
     "bin": {
-        "create-test-players": "./src/bin/create-test-players.js"
+        "create-test-players": "./src/bin/create-test-players.js",
+        "create-vote-device": "./src/bin/create-vote-device.js"
     },
     "dependencies": {
         "@cmcrobotics/homie-lit": "^0.7.3",
         "@tweenjs/tween.js": "25.0.0",
         "aframe": "^1.6.0",
+        "aframe-draw-component": "^1.5.0",
         "aframe-extras": "^7.5.1",
         "aframe-htmlembed-component": "^1.0.0",
         "aframe-label": "^0.1.3",
         "aframe-orbit-controls": "^1.3.2",
+        "aframe-textwrap-component": "^1.0.1",
         "browserify-zlib": "^0.2.0",
         "buffer": "^6.0.3",
         "https-browserify": "^1.0.0",
+        "js-yaml": "^4.1.0",
         "lit-html": "^3.2.1",
         "loglevel": "^1.9.2",
         "mqtt": "^4.3.7",
@@ -29,7 +33,8 @@
         "reveal.js": "^5.1.0",
         "rxjs": "^7.8.0",
         "stream-http": "^3.2.0",
-        "url": "^0.11.4"
+        "url": "^0.11.4",
+        "uuid": "^10.0.0"
     },
     "devDependencies": {
         "copy-webpack-plugin": "^12.0.2",

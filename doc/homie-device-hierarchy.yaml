@@ -269,8 +269,8 @@ devices:
             name: Display Luminosity
             datatype: integer
             unit: "%"
-  vote:
-    name: Voting round
+  vote-X:
+    name: Voting round X
     state: ready
     nodes:
       config:
@@ -283,9 +283,10 @@ devices:
           question-statement:
             name: Question Statement
             datatype: string
-          voting-open:
-            name: Voting Status
-            datatype: boolean
+          state:
+            name: Voting state
+            datatype: enum
+            format: ready,active,finished
           total-votes:
             name: Total Votes Cast
             datatype: integer
