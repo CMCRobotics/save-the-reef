@@ -40,6 +40,9 @@ class QuizzSceneController {
     this.questionParentElement.appendChild(this.questionDisplayElement);
 
     this.emoji = '🎁';
+
+    this.revealButton = null;
+    this.playerAnswers = new Map();
   }
 
   setupLogging() {
@@ -67,13 +70,12 @@ class QuizzSceneController {
         }
       }
 
-
-      rule ProcessTerminalVoteUpdate {
+      rule ProcessPlayerVote {
         when {
-          update: PropertyUpdate update.deviceId.startsWith('terminal-') && update.nodeId === 'vote' && update.propertyId === 'option'
+          update: PropertyUpdate update.deviceId.startsWith('terminal-') && update.nodeId === 'vote' && update.propertyId === 'option' && update.value.trim().length != 0
         }
         then {
-          handleTerminalVoteUpdate(update);
+          handlePlayerVote(update);
         }
       }
     `, {
@@ -84,7 +86,7 @@ class QuizzSceneController {
       scope: {
         handlePropertyUpdate: this.handlePropertyUpdate.bind(this),
         handleVoteUpdate: this.handleVoteUpdate.bind(this),
-        handleTerminalVoteUpdate: this.handleTerminalVoteUpdate.bind(this),
+        handlePlayerVote: this.handlePlayerVote.bind(this),
         logger: console
       },
       name: "quizz"
@@ -149,15 +151,144 @@ class QuizzSceneController {
 
     this.currentVote.properties[update.propertyId] = update.value;
 
+    if (update.propertyId === 'correct-option') {
+      this.currentVote.correctOption = update.value;
+    }
+
+
     if (update.propertyId === 'question-statement' || 
         update.propertyId === 'option-1' || 
         update.propertyId === 'option-2' || 
         update.propertyId === 'option-3' || 
         update.propertyId === 'option-4') {
       this.updateQuestionDisplay();
+      this.createRevealButton();
     }
 
     log.debug(`Updating vote property: ${update.deviceId}/${update.propertyId} = ${update.value}`);
+  }
+
+  handlePlayerVote(update) {
+    const terminalId = update.deviceId.split('-')[1];
+    const playerNodeId = this.terminalToPlayerMap.get(terminalId);
+    if (playerNodeId) {
+      this.playerAnswers.set(playerNodeId, update.value);
+    }
+    this.handleTerminalVoteUpdate(update);
+  }
+
+  createRevealButton() {
+    if (!this.revealButton) {
+      this.revealButton = document.createElement('button');
+      this.revealButton.id = 'mode-toggle';
+      this.revealButton.style.position = 'absolute';
+      this.revealButton.style.top = '10px';
+      this.revealButton.style.left = '10px';
+      this.revealButton.style.zIndex = '1000';
+      this.revealButton.textContent = 'Reveal Results';
+      this.revealButton.addEventListener('click', () => this.revealResults());
+      document.body.appendChild(this.revealButton);
+    }
+  }
+
+  createNextButton() {
+    if (!this.nextButton) {
+      this.nextButton = document.createElement('button');
+      this.nextButton.id = 'next-button';
+      this.nextButton.style.position = 'absolute';
+      this.nextButton.style.top = '10px';
+      this.nextButton.style.left = '120px';
+      this.nextButton.style.zIndex = '1000';
+      this.nextButton.textContent = 'Next Question';
+      this.nextButton.style.display = 'none';
+      this.nextButton.addEventListener('click', () => this.prepareNextQuestion());
+      document.body.appendChild(this.nextButton);
+    }
+  }
+
+
+  revealResults() {
+    if (this.currentVote && this.currentVote.correctOption) {
+      this.highlightCorrectAnswer();
+      this.updatePlayerFeedback();
+      this.showNextButton();
+    }
+  }
+
+  showNextButton() {
+    if (this.nextButton) {
+      this.nextButton.style.display = 'block';
+    } else {
+      this.createNextButton();
+      this.nextButton.style.display = 'block';
+    }
+  }
+
+  prepareNextQuestion() {
+    this.resetPlayerAnimations();
+    this.clearPlayerVotes();
+    this.clearAllEmojis();
+    this.hideNextButton();
+    this.clearQuestionDisplay();
+  }
+
+  clearAllEmojis() {
+    this.playerSayEntities.forEach((sayEntity, playerNodeId) => {
+      if (sayEntity) {
+        sayEntity.setAttribute('visible', 'false');
+        render(html``, sayEntity);  // Clear the content of the say entity
+      }
+    });
+    log.debug('Cleared all player emojis');
+  }
+
+  resetPlayerAnimations() {
+    this.players.forEach((player, nodeId) => {
+      this.updatePlayerAnimationLocally(nodeId, "clip: Idle; loop: repeat");
+    });
+  }
+
+  clearPlayerVotes() {
+    this.terminalToPlayerMap.forEach((playerNodeId, terminalId) => {
+      this.clearTerminalVote(terminalId);
+    });
+    this.playerAnswers.clear();
+  }
+
+  clearTerminalVote(terminalId) {
+    const deviceId = `terminal-${terminalId}`;
+    const nodeId = 'vote';
+    const propertyId = 'option';
+    const value = undefined;
+
+    // Publish MQTT message to clear the vote
+    this.homieObserver.publish(`${deviceId}/${nodeId}/${propertyId}`, value);
+  }
+
+  hideNextButton() {
+    if (this.nextButton) {
+      this.nextButton.style.display = 'none';
+    }
+  }
+
+  clearQuestionDisplay() {
+    render(html``, this.questionDisplayElement);
+    this.currentVote = null;
+  }
+
+  highlightCorrectAnswer() {
+    const correctOptionIndex = parseInt(this.currentVote.correctOption) - 1;
+    const updatedTemplate = questionDisplayTemplate(
+      this.currentVote.properties['question-statement'],
+      [
+        this.currentVote.properties['option-1'],
+        this.currentVote.properties['option-2'],
+        this.currentVote.properties['option-3'],
+        this.currentVote.properties['option-4']
+      ],
+      correctOptionIndex
+    );
+    render(updatedTemplate, this.questionDisplayElement);
   }
 
   handleTerminalVoteUpdate(update) {
@@ -166,7 +297,7 @@ class QuizzSceneController {
     this.displayEmoji(terminalId);
   }
 
-displayEmoji(terminalId) {
+  displayEmoji(terminalId) {
     const playerNodeId = this.terminalToPlayerMap.get(terminalId);
 
     if (playerNodeId) {
@@ -176,6 +307,7 @@ displayEmoji(terminalId) {
       }
     }
   }
+
 
   renderEmojiEntity(playerEntity, playerNodeId) {
     const template = this.createEmojiTemplate(playerNodeId);
@@ -214,6 +346,67 @@ displayEmoji(terminalId) {
     `;
   }
 
+  updatePlayerFeedback() {
+    this.playerAnswers.forEach((answer, playerNodeId) => {
+      const isCorrect = ((parseInt(answer)+1) === parseInt(this.currentVote.correctOption));
+      const emoji = isCorrect ? '🟩' : '❌';
+      this.updatePlayerEmoji(playerNodeId, emoji);
+      
+      if (!isCorrect) {
+        this.updatePlayerAnimationLocally(playerNodeId, "clip: Death; loop: once; clampWhenFinished: true");
+        setTimeout(() => {
+          this.updatePlayerAnimationLocally(playerNodeId, "clip: Idle; loop: repeat");
+        }, 5000); // Reset to Idle after 5 seconds
+      }
+    });
+  }
+
+
+  updatePlayerEmoji(playerNodeId, emoji) {
+    const playerEntity = this.teamParentElement.querySelector(`#${playerNodeId}`);
+    if (playerEntity) {
+      const template = html`
+        <a-entity
+          face-target="#camera"
+          scale="16 16 16"
+          position="0 4.8 0.5"
+          htmlembed
+        >
+          <div id="${playerNodeId}-bubble" style="background: #ffffff; border-radius: 20%; padding: 2px; text-align: center;">
+            <span>${emoji}</span>
+          </div>
+        </a-entity>
+      `;
+      let sayEntity = this.playerSayEntities.get(playerNodeId);
+      if (!sayEntity) {
+        sayEntity = document.createElement('a-entity');
+        sayEntity.setAttribute('id', `${playerNodeId}-say`);
+        playerEntity.appendChild(sayEntity);
+        this.playerSayEntities.set(playerNodeId, sayEntity);
+      }
+      render(template, sayEntity);
+      sayEntity.setAttribute('visible', 'true');
+    }
+  }
+
+  updatePlayerAnimationLocally(playerNodeId, animationValue) {
+    const playerEntity = this.teamParentElement.querySelector(`#${playerNodeId}`);
+    if (playerEntity) {
+      playerEntity.setAttribute('animation-mixer', animationValue);
+      log.debug(`Updated animation for player ${playerNodeId}: ${animationValue}`);
+    }
+  }
+
+  updatePlayerAnimation(player) {
+    const playerEntity = this.teamParentElement.querySelector(`#${player.nodeId}`);
+    if (playerEntity) {
+      playerEntity.setAttribute('animation-mixer', player.properties['animation-mixer']);
+      log.debug(`Updated animation for player ${player.nodeId}: ${player.properties['animation-mixer']}`);
+    }
+  }
+
+
+
   updateQuestionDisplay() {
     if (this.currentVote && 
         this.currentVote.properties['question-statement'] && 
@@ -234,14 +427,6 @@ displayEmoji(terminalId) {
 
       log.debug(`Updated question display: ${question}`);
       log.debug(`Options: ${options.join(', ')}`);
-    }
-  }
-
-  updatePlayerAnimation(player) {
-    const playerEntity = this.parentElement.querySelector(`#${player.nodeId}`);
-    if (playerEntity) {
-      playerEntity.setAttribute('animation-mixer', player.properties['animation-mixer']);
-      log.debug(`Updated animation for player ${player.nodeId}: ${player.properties['animation-mixer']}`);
     }
   }
 

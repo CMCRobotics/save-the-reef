@@ -6,9 +6,10 @@ import './components/bubble';
 // import './components/floating-camera';
 // import './components/custom-controls';
 import './components/gradient';
-// import './components/simple-navmesh';
-// import './components/surface-placer';
 import './components/ocean-shader';
+import 'js-yaml';
+import 'loglevel';
+import 'lit-html';
 
 import 'aframe-orbit-controls';
 import 'aframe-extras';

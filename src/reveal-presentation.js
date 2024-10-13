@@ -9,20 +9,20 @@ Reveal.initialize({
     progress: false,
     controls: true
   }).then(() => {
-    $(document).ready(
-        function(){
-            $('body').on('submit','form',function() {
-                var sessionCode = $('#session_code')[0].value;
-                $("section[data-microsquad]").each(
-                    function(){
-                        var iframeUrl = new URL( $(this).data("background-iframe") );
-                        iframeUrl.searchParams.set("sc", sessionCode);
-                        $(this).data("background-iframe",iframeUrl.href);
-                        console.log("Now "+$(this).data("background-iframe"));
-                    }
-                );
-                return false;
-            });
-        } 
-    );
+    // $(document).ready(
+    //     function(){
+    //         // $('body').on('submit','form',function() {
+    //         //     var sessionCode = $('#session_code')[0].value;
+    //         //     $("section[data-microsquad]").each(
+    //         //         function(){
+    //         //             var iframeUrl = new URL( $(this).data("background-iframe") );
+    //         //             iframeUrl.searchParams.set("sc", sessionCode);
+    //         //             $(this).data("background-iframe",iframeUrl.href);
+    //         //             console.log("Now "+$(this).data("background-iframe"));
+    //         //         }
+    //         //     );
+    //         //     return false;
+    //         // });
+    //     } 
+    // );
 });

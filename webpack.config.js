@@ -7,6 +7,7 @@ module.exports = {
     aframe: './src/aframe-scene.js',
     tutorial: './src/tutorial-scene.js',
     quizz: './src/quizz-scene.js',
+    gallery: './src/gallery-scene.js',
     presentation: './src/reveal-presentation.js',
     voteAggregator: './src/vote-aggregator.js'
   },
