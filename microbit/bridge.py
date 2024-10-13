@@ -2,7 +2,7 @@ from microbit import *
 import radio
 import utime
 
-radio.config(group=1, power=1)
+radio.config(group=1, power=6)
 radio.on()
 
 display.show(Image.TARGET)
