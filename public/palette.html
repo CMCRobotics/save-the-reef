@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Marine Conservation Desktop Placement System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
+    <script>
+        AFRAME.registerComponent('scene-setup', {
+            init: function() {
+                console.log('Scene initialized');
+            }
+        });
+
+        AFRAME.registerComponent('object-palette', {
+            init: function() {
+                console.log('Palette component initialized');
+                const el = this.el;
+                this.selectedObject = null;
+                this.previewEntity = null;
+                
+                const preview = document.createElement('a-entity');
+                preview.setAttribute('visible', false);
+                this.el.sceneEl.appendChild(preview);
+                this.previewEntity = preview;
+                
+                // Attach click handlers after a short delay to ensure everything is loaded
+                setTimeout(() => {
+                    document.querySelectorAll('[selectable-object]').forEach(element => {
+                        console.log('Adding click handler to:', element.getAttribute('selectable-object'));
+                        element.addEventListener('click', (evt) => {
+                            console.log('Palette item clicked:', element.getAttribute('selectable-object'));
+                            const objectType = element.getAttribute('selectable-object');
+                            this.selectObject(objectType);
+                            evt.stopPropagation();
+                        });
+                    });
+                }, 1000);
+
+                document.querySelectorAll('[placement-point]').forEach(element => {
+                    element.addEventListener('click', (evt) => {
+                        console.log('Placement point clicked, selected object:', this.selectedObject);
+                        if (this.selectedObject) {
+                            this.placeObject(element.object3D.position);
+                            evt.stopPropagation();
+                        }
+                    });
+                });
+            },
+            
+            selectObject: function(objectType) {
+                console.log('Selecting object:', objectType);
+                this.selectedObject = objectType;
+                
+                this.previewEntity.setAttribute('geometry', {
+                    primitive: this.getGeometryForType(objectType)
+                });
+                this.previewEntity.setAttribute('material', {
+                    color: '#88888855',
+                    transparent: true,
+                    opacity: 0.5
+                });
+                this.previewEntity.setAttribute('visible', true);
+            },
+            
+            placeObject: function(position) {
+                if (!this.selectedObject) return;
+                
+                console.log('Placing object:', this.selectedObject, 'at position:', position);
+                
+                const newObject = document.createElement('a-entity');
+                newObject.setAttribute('geometry', {
+                    primitive: this.getGeometryForType(this.selectedObject)
+                });
+                newObject.setAttribute('material', {
+                    color: this.getColorForType(this.selectedObject)
+                });
+                newObject.setAttribute('position', {
+                    x: position.x,
+                    y: position.y,
+                    z: position.z
+                });
+                
+                this.el.sceneEl.appendChild(newObject);
+                this.selectedObject = null;
+                this.previewEntity.setAttribute('visible', false);
+            },
+            
+            getGeometryForType: function(type) {
+                const geometryMap = {
+                    coral: 'cone',
+                    seaweed: 'cylinder',
+                    rock: 'sphere',
+                    clam: 'box'
+                };
+                return geometryMap[type] || 'box';
+            },
+            
+            getColorForType: function(type) {
+                const colorMap = {
+                    coral: '#ff6b6b',
+                    seaweed: '#51cf66',
+                    rock: '#868e96',
+                    clam: '#ffd43b'
+                };
+                return colorMap[type] || '#ffffff';
+            },
+            
+            tick: function() {
+                if (this.selectedObject && this.previewEntity) {
+                    const cursor = document.querySelector('[raycaster]').components.raycaster;
+                    
+                    if (cursor.intersections.length > 0) {
+                        const intersection = cursor.intersections[0];
+                        if (intersection.object.el.hasAttribute('placement-point')) {
+                            const position = intersection.object.el.getAttribute('position');
+                            this.previewEntity.setAttribute('position', position);
+                            this.previewEntity.setAttribute('visible', true);
+                        } else {
+                            this.previewEntity.setAttribute('visible', false);
+                        }
+                    } else {
+                        this.previewEntity.setAttribute('visible', false);
+                    }
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <a-scene scene-setup>
+        <!-- Camera setup -->
+        <a-entity position="0 2 2">
+            <a-camera look-controls wasd-controls>
+                <a-cursor
+                    raycaster="objects: .clickable; far: 20"
+                    cursor="fuse: false"
+                    material="color: #000; shader: flat"
+                    position="0 0 -1"
+                    geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03">
+                </a-cursor>
+            </a-camera>
+        </a-entity>
+
+        <!-- Environment -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
+        <a-sky color="#37ccff"></a-sky>
+        <a-light type="ambient" color="#445451"></a-light>
+        <a-light type="point" intensity="2" position="2 4 4"></a-light>
+
+        <!-- Palette UI -->
+        <a-entity id="palette" position="-1 1.5 0">
+            <a-plane width="1" height="0.5" color="#ffffff">
+                <a-text value="Marine Elements" align="center" position="0 0.2 0.01"></a-text>
+                
+                <!-- Added clickable boxes behind each item for better hit detection -->
+                <a-entity position="-0.35 0 0.01">
+                    <a-box class="clickable" selectable-object="coral" 
+                           width="0.15" height="0.15" depth="0.02" 
+                           material="opacity: 0; transparent: true"
+                           position="0 0 -0.01"></a-box>
+                    <a-cone radius-bottom="0.05" height="0.1" color="#ff6b6b"></a-cone>
+                    <a-text value="Coral" align="center" position="0 -0.1 0" scale="0.5 0.5 0.5"></a-text>
+                </a-entity>
+                
+                <a-entity position="-0.15 0 0.01">
+                    <a-box class="clickable" selectable-object="seaweed" 
+                           width="0.15" height="0.15" depth="0.02" 
+                           material="opacity: 0; transparent: true"
+                           position="0 0 -0.01"></a-box>
+                    <a-cylinder radius="0.02" height="0.1" color="#51cf66"></a-cylinder>
+                    <a-text value="Seaweed" align="center" position="0 -0.1 0" scale="0.5 0.5 0.5"></a-text>
+                </a-entity>
+                
+                <a-entity position="0.15 0 0.01">
+                    <a-box class="clickable" selectable-object="rock" 
+                           width="0.15" height="0.15" depth="0.02" 
+                           material="opacity: 0; transparent: true"
+                           position="0 0 -0.01"></a-box>
+                    <a-sphere radius="0.05" color="#868e96"></a-sphere>
+                    <a-text value="Rock" align="center" position="0 -0.1 0" scale="0.5 0.5 0.5"></a-text>
+                </a-entity>
+                
+                <a-entity position="0.35 0 0.01">
+                    <a-box class="clickable" selectable-object="clam" 
+                           width="0.15" height="0.15" depth="0.02" 
+                           material="opacity: 0; transparent: true"
+                           position="0 0 -0.01"></a-box>
+                    <a-box width="0.08" height="0.06" depth="0.04" color="#ffd43b"></a-box>
+                    <a-text value="Clam" align="center" position="0 -0.1 0" scale="0.5 0.5 0.5"></a-text>
+                </a-entity>
+            </a-plane>
+        </a-entity>
+
+        <!-- Placement points grid -->
+        <a-entity position="0 0.1 -1">
+            <a-box class="clickable" placement-point width="0.1" height="0.1" depth="0.1" color="#00ff00" opacity="0.2" position="-0.5 0 0"></a-box>
+            <a-box class="clickable" placement-point width="0.1" height="0.1" depth="0.1" color="#00ff00" opacity="0.2" position="0 0 0"></a-box>
+            <a-box class="clickable" placement-point width="0.1" height="0.1" depth="0.1" color="#00ff00" opacity="0.2" position="0.5 0 0"></a-box>
+            <a-box class="clickable" placement-point width="0.1" height="0.1" depth="0.1" color="#00ff00" opacity="0.2" position="-0.5 0 0.5"></a-box>
+            <a-box class="clickable" placement-point width="0.1" height="0.1" depth="0.1" color="#00ff00" opacity="0.2" position="0 0 0.5"></a-box>
+            <a-box class="clickable" placement-point width="0.1" height="0.1" depth="0.1" color="#00ff00" opacity="0.2" position="0.5 0 0.5"></a-box>
+        </a-entity>
+
+        <!-- Initialize the placement system -->
+        <a-entity object-palette></a-entity>
+    </a-scene>
+</body>
+</html>
