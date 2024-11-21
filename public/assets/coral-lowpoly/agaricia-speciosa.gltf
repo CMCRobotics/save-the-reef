@@ -1,0 +1,137 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v3.4.50",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "agaricia-speciosa"
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "coral_texture",
+            "pbrMetallicRoughness" : {
+                "baseColorTexture" : {
+                    "index" : 0
+                },
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.800000011920929
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "agaricia-speciosa",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "TEXCOORD_0" : 1,
+                        "NORMAL" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "textures" : [
+        {
+            "sampler" : 0,
+            "source" : 0
+        }
+    ],
+    "images" : [
+        {
+            "mimeType" : "image/png",
+            "name" : "coral_texture",
+            "uri" : "coral_texture.png"
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 665,
+            "max" : [
+                0.07011787593364716,
+                0.027812829241156578,
+                0.05542201176285744
+            ],
+            "min" : [
+                -0.07061128318309784,
+                -0.0066757723689079285,
+                -0.04354888200759888
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 665,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 665,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 2688,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 7980,
+            "byteOffset" : 0,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 5320,
+            "byteOffset" : 7980,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 7980,
+            "byteOffset" : 13300,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 5376,
+            "byteOffset" : 21280,
+            "target" : 34963
+        }
+    ],
+    "samplers" : [
+        {
+            "magFilter" : 9729,
+            "minFilter" : 9987
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 26656,
+            "uri" : "agaricia-speciosa.bin"
+        }
+    ]
+}
