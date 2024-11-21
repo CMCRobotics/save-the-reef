@@ -32,16 +32,24 @@ AFRAME.registerComponent('ocean-shader', {
                 varying vec2 vUv;
                 varying float vWaveHeight;
                 
+                #include <skinning_pars_vertex>
+                
                 void main() {
                   vUv = uv;
-                  vec3 pos = position;
                   
-                  float waveEffect = sin(pos.x * 10.0 + time) * cos(pos.z * 10.0 + time) * waveHeight;
-                  pos.y += waveEffect;
+                  #include <skinbase_vertex>
                   
+                  // Transform position first
+                  vec3 transformed = vec3(position);
+                  #include <skinning_vertex>
+                  
+                  // Apply wave effect after skinning
+                  float waveEffect = sin(transformed.x * 10.0 + time) * cos(transformed.z * 10.0 + time) * waveHeight;
+                  transformed.y += waveEffect;
                   vWaveHeight = waveEffect;
                   
-                  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                  vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.0);
+                  gl_Position = projectionMatrix * mvPosition;
                 }
               `,
               fragmentShader: `
@@ -57,10 +65,10 @@ AFRAME.registerComponent('ocean-shader', {
                   
                   vec3 finalColor = mix(waterColor, foamColor, smoothstep(0.0, 0.5, vWaveHeight + 0.5));
                   
-                  // Adjust this line to control color prominence
                   gl_FragColor = vec4(mix(texColor.rgb, finalColor, colorStrength), texColor.a);
                 }
               `,
+              skinning: true,
               transparent: true
             });
 
