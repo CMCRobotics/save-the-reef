@@ -31,8 +31,6 @@ You need to export your token as **NPM_AUTH_TOKEN**.
 # How to reset your broker's persistent data (Mosquitto)
 
 ```bash
-sudo service mosquitto stop
-sudo rm /var/lib/mosquitto/mosquitto.db
-sudo service mosquitto start
+sudo service mosquitto stop && sudo rm /var/lib/mosquitto/mosquitto.db && sudo service mosquitto start
 ```
 
