@@ -131,7 +131,7 @@ dist
 
 .npmrc
 
-*.glb
+public/assets/coral/*.glb
 *.obj
 *.mtl
 public/assets/skybox.png

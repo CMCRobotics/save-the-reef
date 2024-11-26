@@ -31,8 +31,9 @@ function updateCoralModel() {
     const template = html`
         <a-entity
             gltf-model="#coral-${coral.assetId}"
-            position="${coral.position.join(' ')}"
-            scale="${coral.scale.join(' ')}"
+            animation-mixer="loop: repeat; delay: 0.2; timeScale:0.4"
+            position="${coral.lowPolyPosition.join(' ')}"
+            scale="${coral.lowPolyScale.join(' ')}"
         ></a-entity>
         <a-entity
             id="info-panel"
