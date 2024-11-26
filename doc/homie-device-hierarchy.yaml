@@ -3,8 +3,8 @@ devices:
     name: Coral Reef Ecosystem X
     state: ready
     nodes:
-      coral:
-        name: Coral Health Metrics
+      reef-health:
+        name: Reef Health Metrics
         type: sensor
         properties:
           health:
@@ -77,9 +77,9 @@ devices:
           last-update:
             name: Last Updated
             datatype: datetime
-      asset-cluster-X:
-        name: Asset Cluster X
-        type: asset
+      coral-X:
+        name: Coral
+        type: coral
         properties:
           visible:
             name: Visibility
@@ -87,13 +87,42 @@ devices:
           position:
             name: Position
             datatype: json
-          type:
-            name: Cluster Type
+          species:
+            name: Species
             datatype: enum
-            format: algae,coral
-          size:
-            name: Cluster Size
+            format: acropora-cervicornis,acropora-palmata,acropora-prolifera,agaricia-speciosa,colpophyllia-natans,dendrogyra-cylindricus,diploria-labyrinthiformis,eusmilia-fastigiata,gorgona-ventalina,meandrina-meandrites,millepora-alcicornis,montastrea-cavernosa,orbicella-curta,porites-lobata,pseudodiploria-strigosa
+          health:
+            name: Coral Health
             datatype: float
+            unit: "%"
+          growth-index:
+            name: Coral Growth Index
+            datatype: float
+          growth-rate:
+            name: Coral Growth Rate
+            datatype: float
+            unit: mm/year
+          bleaching:
+            name: Coral Bleaching Percentage
+            datatype: float
+            unit: "%"
+      # asset-cluster-X:
+      #   name: Asset Cluster X
+      #   type: asset
+      #   properties:
+      #     visible:
+      #       name: Visibility
+      #       datatype: boolean
+      #     position:
+      #       name: Position
+      #       datatype: json
+      #     type:
+      #       name: Cluster Type
+      #       datatype: enum
+      #       format: algae,coral
+      #     size:
+      #       name: Cluster Size
+      #       datatype: float
       human-impact:
         name: Human Impact Factors
         type: sensor
