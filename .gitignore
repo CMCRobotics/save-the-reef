@@ -136,3 +136,8 @@ public/assets/coral/*.glb
 *.mtl
 public/assets/skybox.png
 public/assets/players/
+public/assets/coral.glb
+public/assets/rock.glb
+public/assets/triplets.glb
+public/assets/water-plant.glb
+public/assets/wreck.glb
