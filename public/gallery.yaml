@@ -59,7 +59,7 @@
   position: [4, 0.5, -3]
   scale: [50, 50, 50]
   lowPolyPosition: [-3, 0.5, -1]
-  lowPolyScale: [50, 50, 50]
+  lowPolyScale: [40, 40, 40]
 
 - assetId: eusmilia-fastigiata
   commonName: Smooth Flower Coral
