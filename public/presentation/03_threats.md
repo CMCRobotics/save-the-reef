@@ -26,7 +26,7 @@ Et même à la pollution sonore des bateaux à moteur.
 
 ## Le corail est menacé
 
-Par plusieurs phénomènes nouveaux dans l'histoire de la Terre :
+Par plusieurs phénomènes nouveaux dans l'Histoire :
 
 * La pollution plastique
 * La surpèche

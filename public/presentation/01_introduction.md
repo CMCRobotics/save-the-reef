@@ -23,6 +23,14 @@ Elle absorbe 70 à 90 millions de tonnes de CO2 par an.
 
 --
 
+## Pour les poissons 
+
+et autres animaux marins...
+
+C'est comme un supermarché au moment des soldes
+
+--
+
 ## Le corail...
 
 * protège les côtes 
