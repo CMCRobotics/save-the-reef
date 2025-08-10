@@ -9,7 +9,7 @@ class SerialBridgeProxy {
   constructor(homieObserver) {
     this.homieObserver = homieObserver;
     this.terminals = new Map();
-    this.currentMode = 'VOTING';
+    this.currentMode = 'SENSOR';
     this.buffer = '';
     this.writer = null;
     this.propagateReleasedButton = true;
@@ -30,8 +30,6 @@ class SerialBridgeProxy {
     }
     return null;
   }
-
-
 
   async setupWebUSB() {
     try {
@@ -77,8 +75,8 @@ class SerialBridgeProxy {
   }
 
   processData(data) {
-    const [prefix, terminalId, value] = data.split(',');
-    if (!terminalId || !value) {
+    const [prefix, terminalId, ...values] = data.split(',');
+    if (!terminalId || values.length === 0) {
       console.log('Invalid data, ignoring:', data);
       return;
     }
@@ -91,9 +89,9 @@ class SerialBridgeProxy {
     }
 
     if (prefix === 'VOTE' && this.currentMode === 'VOTING') {
-      this.processVote(terminal, value);
+      this.processVote(terminal, values[0]);
     } else if (prefix === 'SENS' && this.currentMode === 'SENSOR') {
-      this.processSensorData(terminal, value);
+      this.processSensorData(terminal, values);
     } else {
       console.error('Invalid prefix or mode mismatch:', prefix, this.currentMode);
     }
@@ -116,29 +114,54 @@ class SerialBridgeProxy {
     this.publishProperty(terminal.id, 'vote', timestampProperty);
   }
 
-  processSensorData(terminal, value) {
-    const buttonNodeId = `button-${value.toLowerCase()}`;
-    const buttonNode = terminal.getNode(buttonNodeId);
-    if (!buttonNode) {
-      console.error(`Button node not found for terminal: ${terminal.id}, button: ${value}`);
-      return;
+  processSensorData(terminal, values) {
+    const timestamp = new Date().toISOString();
+
+    // Handle button press if it's a button value
+    if (values[0].toLowerCase() === 'a' || values[0].toLowerCase() === 'b') {
+      const buttonNodeId = `button-${values[0].toLowerCase()}`;
+      const buttonNode = terminal.getNode(buttonNodeId);
+      if (buttonNode) {
+        const stateProperty = buttonNode.getProperty('state');
+        const timestampProperty = buttonNode.getProperty('timestamp');
+
+        stateProperty.setValue('pressed');
+        timestampProperty.setValue(timestamp);
+
+        this.publishProperty(terminal.id, buttonNodeId, stateProperty);
+        this.publishProperty(terminal.id, buttonNodeId, timestampProperty);
+
+        if(this.propagateReleasedButton){
+          setTimeout(() => {
+            stateProperty.setValue('released');
+            this.publishProperty(terminal.id, buttonNodeId, stateProperty);
+          }, 500);
+        }
+        return;
+      }
     }
 
-    const stateProperty = buttonNode.getProperty('state');
-    const timestampProperty = buttonNode.getProperty('timestamp');
+    // Handle environmental sensor data
+    const [sensorType, value] = values;
+    const sensorNodes = {
+      'TEMP': 'temperature',
+      'SOUND': 'sound',
+      'LIGHT': 'light'
+    };
 
-    stateProperty.setValue('pressed');
-    timestampProperty.setValue(new Date().toISOString());
+    const nodeId = sensorNodes[sensorType];
+    if (nodeId) {
+      const node = terminal.getNode(nodeId);
+      if (node) {
+        const valueProperty = node.getProperty('value');
+        const timestampProperty = node.getProperty('timestamp');
 
-    this.publishProperty(terminal.id, buttonNodeId, stateProperty);
-    this.publishProperty(terminal.id, buttonNodeId, timestampProperty);
+        valueProperty.setValue(value);
+        timestampProperty.setValue(timestamp);
 
-    if(this.propagateReleasedButton){
-      // Reset the button state after a short delay
-      setTimeout(() => {
-        stateProperty.setValue('released');
-        this.publishProperty(terminal.id, buttonNodeId, stateProperty);
-      }, 500);
+        this.publishProperty(terminal.id, nodeId, valueProperty);
+        this.publishProperty(terminal.id, nodeId, timestampProperty);
+      }
     }
   }
 
@@ -161,6 +184,24 @@ class SerialBridgeProxy {
     buttonBNode.addProperty(new HomieProperty('state','State',undefined, 'enum','pressed,released'));
     buttonBNode.addProperty(new HomieProperty('timestamp','Timestamp',undefined, 'datetime','ISO 8601'));
     terminal.addNode(buttonBNode);
+
+    // Create temperature node
+    const temperatureNode = new HomieNode('temperature', 'Temperature Sensor');
+    temperatureNode.addProperty(new HomieProperty('value', 'Temperature', undefined, 'float', '-40:125'));
+    temperatureNode.addProperty(new HomieProperty('timestamp', 'Timestamp', undefined, 'datetime', 'ISO 8601'));
+    terminal.addNode(temperatureNode);
+
+    // Create sound level node
+    const soundNode = new HomieNode('sound', 'Sound Level Sensor');
+    soundNode.addProperty(new HomieProperty('value', 'Sound Level', undefined, 'integer', '0:255'));
+    soundNode.addProperty(new HomieProperty('timestamp', 'Timestamp', undefined, 'datetime', 'ISO 8601'));
+    terminal.addNode(soundNode);
+
+    // Create light level node
+    const lightNode = new HomieNode('light', 'Light Level Sensor');
+    lightNode.addProperty(new HomieProperty('value', 'Light Level', undefined, 'integer', '0:255'));
+    lightNode.addProperty(new HomieProperty('timestamp', 'Timestamp', undefined, 'datetime', 'ISO 8601'));
+    terminal.addNode(lightNode);
     
     // Publish device and nodes
     this.publishTerminalDevice(terminal);
@@ -174,7 +215,7 @@ class SerialBridgeProxy {
     // Publish device properties
     this.homieObserver.publish(`${baseTopic}/$homie`, '4.0', { retain: true });
     this.homieObserver.publish(`${baseTopic}/$name`, `Terminal ${terminal.id.split('-')[1]}`, { retain: true });
-    this.homieObserver.publish(`${baseTopic}/$nodes`, 'vote,button-a,button-b', { retain: true });
+    this.homieObserver.publish(`${baseTopic}/$nodes`, 'vote,button-a,button-b,temperature,sound,light', { retain: true });
     this.homieObserver.publish(`${baseTopic}/$extensions`, '', { retain: true });
     this.homieObserver.publish(`${baseTopic}/$implementation`, 'custom', { retain: true });
 

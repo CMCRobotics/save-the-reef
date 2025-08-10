@@ -31,7 +31,12 @@ function updateCoralModel() {
     const template = html`
         <a-entity
             gltf-model="#coral-${coral.assetId}"
-            animation-mixer="loop: repeat; delay: 0.2; timeScale:0.4"
+            position="${coral.position.join(' ')}"
+            scale="${coral.scale.join(' ')}"
+        ></a-entity>
+        <a-entity
+            gltf-model="#coral-lowpoly-${coral.assetId}"
+            animation-mixer="clip: ${coral.assetId}-animated; loop: repeat; delay: 0.2; timeScale:0.4"
             position="${coral.lowPolyPosition.join(' ')}"
             scale="${coral.lowPolyScale.join(' ')}"
         ></a-entity>
@@ -47,6 +52,7 @@ function updateCoralModel() {
                 scale="0.5 0.5 0.5"
                 color="#FFFFFF"
                 width="8"
+                wrapCount="0"
             ></a-text>
         </a-entity>
     `;
