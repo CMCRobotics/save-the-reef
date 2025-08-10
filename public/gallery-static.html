@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Save the reef</title>
+    <script defer src="aframe.bundle.js"></script>
+  </head>
+  <body>
+    <!-- scene-controller  -->
+    <a-scene fog="type: exponential; color: #0C4B5F; near: 0.5; far: 60; density: 0.001" shadow="type: pcfsoft">
+      <a-assets>
+        <img id="sandTexture" src="assets/sand.jpg">
+        <img id="skybox" src="assets/skybox.png">
+        <a-asset-item id="rock-model" src="assets/rock.glb"></a-asset-item>
+
+        <a-asset-item id="coral-acropora-cervicornis"     src="assets/coral/acropora-cervicornis.glb"></a-asset-item>
+        <a-asset-item id="coral-acropora-prolifera"       src="assets/coral/acropora-prolifera.glb"></a-asset-item>
+        <a-asset-item id="coral-acropora-palmata"         src="assets/coral/acropora-palmata.glb"></a-asset-item>
+      </a-assets>
+
+
+      <!-- Underwater floor with sand texture -->
+      <a-circle id="floor" position="0 0 -4" rotation="-90 0 0" radius="120" segments="80" 
+               material="src: #sandTexture; repeat: 5 5" shadow="receive: true"></a-circle>
+               
+
+      <!-- Stationary caustics effect using custom shader -->
+      <a-circle position="0 0.01 -4" rotation="-90 0 0" radius="120" segments="80" 
+               material="shader: stationary-caustics; color: #00aaff; transparent: true; blending: additive" shadow="receive: true"></a-circle>
+
+      <!-- Water surface -->
+      <a-circle position="0 30 -4" rotation="-90 0 0" radius="200" segments="80" 
+               material="shader: water-surface; color: #7AD7F0; transparent: true; side: double"></a-circle>
+
+    
+      <a-entity id="rock" gltf-model="#rock-model" rotation="0 90 0" position="0 -0.391 0" scale="1.1 1.1 1.1">
+        <!-- TOP SECTION -->
+        <!-- 6 to 8 at the top branching out from central point and interconnected  -->
+
+          <!-- <a-entity id="coral0-0-0" position="0 10.346 0" rotation="0 36 0" scale="40 40 40"  ocean-shader="colorStrength: 0.4; foamColor: #8B4513; waveHeight: 0.001" gltf-model="#coral-acropora-cervicornis"></a-entity> -->
+
+
+        <!-- 2 to 3 at the top -->
+        <a-entity id="coral" position="2 6.845 1" scale="15 15 14.8" rotation="1.709 -45.931 -8.271"  ocean-shader="colorStrength: 0.3; foamColor: #800080; waveHeight: 0.001" gltf-model="#coral-acropora-palmata"></a-entity>
+        
+        
+        <!-- 6 to 8 at the top branching out from central point and interconnected  -->
+        <!-- <a-entity id="coral6-0-1" position="1.972 7.879 -2.455"  rotation="-20 10 -40" ocean-shader="colorStrength: 0.4; foamColor: #8B4513; waveHeight: 0.001"  scale="7.5 7.5 7.5" gltf-model="#coral-acropora-prolifera"></a-entity> -->
+        
+      </a-entity>
+
+      <a-entity light="type: directional; color: #FFF; intensity: 0.4; target: #rock" position="1 1 1"></a-entity>
+
+      <!-- Ambient light to simulate underwater lighting -->
+      <a-light type="ambient" color="#0C4B5F" intensity="0.3"></a-light>
+
+      <!-- Directional light to enhance the caustics effect and cast shadows -->
+      <a-light id="light-floor" type="directional" target="#floor" color="#ffffff" intensity="0.6" position="-1 19 -21" castShadow="true" 
+               shadow="mapSize: 2048x2048; bias: -0.001; near: 0.3; far: 50"></a-light>
+            
+      <!-- Underwater sky color -->
+      <a-sky src="#skybox" ></a-sky>
+
+      <!-- Camera -->
+      <a-entity camera look-controls="enabled: false" orbit-controls="autoRotate: true; autoRotateSpeed:0.5; zoomSpeed: 1.5; minDistance: 20; maxDistance: 36; initialPosition: 0 8 28; maxPolarAngle: 80; rotateSpeed: 2">
+      </a-entity>
+
+    </a-scene>
+  </body>
+</html>

@@ -1,0 +1,348 @@
+devices:
+  reef-X:
+    name: Coral Reef Ecosystem X
+    state: ready
+    nodes:
+      reef-health:
+        name: Reef Health Metrics
+        type: sensor
+        properties:
+          health:
+            name: Overall Health
+            datatype: float
+            unit: "%"
+          growth-index:
+            name: Growth Index
+            datatype: float
+          growth-rate:
+            name: Growth Rate
+            datatype: float
+            unit: mm/year
+          bleaching:
+            name: Bleaching Percentage
+            datatype: float
+            unit: "%"
+          species-diversity:
+            name: Species Diversity
+            datatype: integer
+            unit: "%"
+      ecosystem:
+        name: Ecosystem Indicators
+        type: sensor
+        properties:
+          fish-population:
+            name: Fish Population
+            datatype: integer
+          algae-cover:
+            name: Algae Cover
+            datatype: float
+            unit: "%"
+          predator-presence:
+            name: Predator Presence
+            datatype: boolean
+      environment:
+        name: Environmental Conditions
+        type: sensor
+        properties:
+          water-temperature:
+            name: Water Temperature
+            datatype: float
+            unit: °C
+          water-acidity:
+            name: Water Acidity
+            datatype: float
+            unit: pH
+          light-intensity:
+            name: Light Intensity
+            datatype: float
+            unit: "%"
+          nutrient-levels:
+            name: Nutrient Levels
+            datatype: float
+            unit: mg/L
+      asset-lifeform-X:
+        name: Marine Life Form X
+        type: asset
+        properties:
+          visible:
+            name: Visibility
+            datatype: boolean
+          position:
+            name: Position
+            datatype: json
+          species:
+            name: Species
+            datatype: enum
+            format: turtle,shark,fish-school,eel
+          last-update:
+            name: Last Updated
+            datatype: datetime
+      coral-X:
+        name: Coral
+        type: coral
+        properties:
+          visible:
+            name: Visibility
+            datatype: boolean
+          position:
+            name: Position
+            datatype: json
+          species:
+            name: Species
+            datatype: enum
+            format: acropora-cervicornis,acropora-palmata,acropora-prolifera,agaricia-speciosa,colpophyllia-natans,dendrogyra-cylindricus,diploria-labyrinthiformis,eusmilia-fastigiata,gorgona-ventalina,meandrina-meandrites,millepora-alcicornis,montastrea-cavernosa,orbicella-curta,porites-lobata,pseudodiploria-strigosa
+          health:
+            name: Coral Health
+            datatype: float
+            unit: "%"
+          growth-index:
+            name: Coral Growth Index
+            datatype: float
+          growth-rate:
+            name: Coral Growth Rate
+            datatype: float
+            unit: mm/year
+          bleaching:
+            name: Coral Bleaching Percentage
+            datatype: float
+            unit: "%"
+      # asset-cluster-X:
+      #   name: Asset Cluster X
+      #   type: asset
+      #   properties:
+      #     visible:
+      #       name: Visibility
+      #       datatype: boolean
+      #     position:
+      #       name: Position
+      #       datatype: json
+      #     type:
+      #       name: Cluster Type
+      #       datatype: enum
+      #       format: algae,coral
+      #     size:
+      #       name: Cluster Size
+      #       datatype: float
+      human-impact:
+        name: Human Impact Factors
+        type: sensor
+        properties:
+          pollution-level:
+            name: Pollution Level
+            datatype: float
+            unit: "%"
+          fishing-pressure:
+            name: Fishing Pressure
+            datatype: float
+            unit: "%"
+          tourism-activity:
+            name: Tourism Activity
+            datatype: float
+            unit: "%"
+  gateway:
+    name: Game Gateway
+    state: ready
+    nodes:
+      state-machine:
+        name: State Machine
+        type: state-machine
+        properties:
+          current-state:
+            name: Current State
+            datatype: string
+      player-X:
+        name: Player X
+        type: controller
+        properties:
+          team-id:
+            name: Team ID
+            datatype: string
+          terminal-id:
+            name: Terminal ID
+            datatype: string
+          nickname:
+            name: Player Nickname
+            datatype: string
+          # position:
+          #   name: Player Position
+          #   datatype: json
+          # rotation:
+          #   name: Player Rotation
+          #   datatype: json
+          # scale:
+          #   name: Player Scale
+          #   datatype: float
+          active:
+            name: Player active flag
+            datatype: boolean
+          # last-action:
+          #   name: Last Action Timestamp
+          #   datatype: datetime
+          # action-duration:
+          #   name: Action Duration
+          #   datatype: duration
+          animation-mixer:
+            name: Animation Mixer
+            datatype: string
+            comment: Holds multiple properties directly related to aframe-extras animation mixer as a string
+          animation-start:
+            name: Animation Start
+            datatype: datetime
+          animation-duration:
+            name: Animation Duration
+            datatype: integer
+      # player-manager:
+      #   name: Player Management
+      #   type: controller
+      #   properties:
+      #     player-count:
+      #       name: Number of Players
+      #       datatype: integer
+      #     last-join:
+      #       name: Last Join Timestamp
+      #       datatype: datetime
+      team:
+        name: Team Information
+        type: controller
+        properties:
+          name:
+            name: Team Name
+            datatype: string
+          score:
+            name: Team Score
+            datatype: integer
+          credit:
+            name: Team Credit
+            datatype: float
+            unit: credits
+  terminal-X:
+    name: Game Terminal X
+    state: ready
+    nodes:
+      vote:
+        name: Voting Node
+        type: controller
+        properties:
+          value:
+            name: Vote Value
+            datatype: integer
+          index:
+            name: Vote Index
+            datatype: integer
+          last:
+            name: Last Vote
+            datatype: integer
+      info:
+        name: Terminal Information
+        type: sensor
+        properties:
+          # terminal-id:
+          #   name: Terminal ID
+          #   datatype: string
+          # serial-number:
+          #   name: Serial Number
+          #   datatype: string
+          # heartbeat:
+          #   name: Heartbeat
+          #   datatype: integer
+          command:
+            name: Command
+            datatype: string
+      button-a:
+        name: Button A
+        type: sensor
+        properties:
+          pressed:
+            name: Is Pressed
+            datatype: boolean
+          count:
+            name: Press Count
+            datatype: integer
+          last:
+            name: Last Press
+            datatype: datetime
+      button-b:
+        name: Button B
+        type: sensor
+        properties:
+          pressed:
+            name: Is Pressed
+            datatype: boolean
+          count:
+            name: Press Count
+            datatype: integer
+          last:
+            name: Last Press
+            datatype: datetime
+      # button-a-b:
+      #   name: Button A+B
+      #   type: sensor
+      #   properties:
+      #     pressed:
+      #       name: Is Pressed
+      #       datatype: boolean
+      #     count:
+      #       name: Press Count
+      #       datatype: integer
+      #     last:
+      #       name: Last Press
+      #       datatype: datetime
+      display:
+        name: Terminal Display
+        type: controller
+        properties:
+          contents:
+            name: Display Contents
+            datatype: string
+          luminosity:
+            name: Display Luminosity
+            datatype: integer
+            unit: "%"
+  vote-X:
+    name: Voting round X
+    state: ready
+    nodes:
+      config:
+        name: Voting Configuration
+        type: config
+        properties:
+          question-id:
+            name: Current Question ID
+            datatype: string
+          question-statement:
+            name: Question Statement
+            datatype: string
+          state:
+            name: Voting state
+            datatype: enum
+            format: ready,active,finished
+          total-votes:
+            name: Total Votes Cast
+            datatype: integer
+          option-1:
+            name: Option 1
+            datatype: string
+          option-2:
+            name: Option 2
+            datatype: string
+          option-3:
+            name: Option 3
+            datatype: string
+          option-4:
+            name: Option 4
+            datatype: string
+          correct-option:
+            name: Correct option index
+            datatype: integer
+      terminal-X:
+        name: Terminal x vote node
+        type: terminal-vote
+        properties:
+          vote:
+            name: Terminal X vote
+            datatype: string
+          timestamp:
+            name: Terminal X vote Timestamp
+            datatype: datetime
+
+      
