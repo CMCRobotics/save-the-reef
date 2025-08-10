@@ -1,6 +1,6 @@
 {
     "name": "save-the-reef",
-    "version": "0.2.0",
+    "version": "1.0.0",
     "description": "A marine conservation educational game using A-Frame and Nools",
     "main": "index.js",
     "scripts": {
